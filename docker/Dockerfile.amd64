@@ -1,0 +1,55 @@
+# Use an Ubuntu 24.04 base image
+FROM ubuntu:24.04
+
+# Đặt biến môi trường để tránh lời nhắc tương tác trong quá trình cài đặt gói
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Cài đặt các phụ thuộc cơ bản
+RUN apt-get update && \
+    apt-get install -y wget curl gnupg2 ca-certificates xdg-utils libasound2-dev git python3-pip python3-venv zbar-tools gdebi-core unzip --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Cài đặt Node.js (mới nhất) và PM2
+RUN curl -fsSL https://deb.nodesource.com/setup_current.x -o nodesource_setup.sh && \
+    bash nodesource_setup.sh && \
+    apt-get install -y nodejs && \
+    npm install -g pm2 && \
+    rm nodesource_setup.sh
+
+# Cài đặt Google Chrome và Chromedriver
+RUN wget -O /tmp/chrome.deb https://mirror.cs.uchicago.edu/google-chrome/pool/main/g/google-chrome-stable/google-chrome-stable_126.0.6478.114-1_amd64.deb && \
+    dpkg -i /tmp/chrome.deb || apt-get install -f -y && \
+    rm /tmp/chrome.deb
+
+RUN wget -O /tmp/chromedriver.zip https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.63/linux64/chromedriver-linux64.zip && \
+    unzip /tmp/chromedriver.zip -d /tmp/ && \
+    mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver && \
+    chmod +x /usr/local/bin/chromedriver && \
+    rm -rf /tmp/chromedriver.zip /tmp/chromedriver-linux64
+
+RUN google-chrome --version && \
+    chromedriver --version
+
+# Tạo thư mục ứng dụng
+WORKDIR /usr/src/app
+
+# Sao chép các tập lệnh shell và làm cho chúng có thể thực thi được
+COPY docker/* /usr/src/app/
+
+# Tạo và kích hoạt môi trường ảo trong thư mục ứng dụng, sau đó cài đặt các gói Python
+RUN python3 -m venv /usr/src/app/venv && \
+    /usr/src/app/venv/bin/pip install --upgrade pip && \
+    /usr/src/app/venv/bin/pip install wheel selenium Pillow pyzbar qrcode-terminal mitmproxy python-telegram-bot requests
+
+# Sao chép tập lệnh khởi chạy và làm cho nó có thể thực thi được
+RUN find /usr/src/app -type f -name "*.sh" -exec chmod +x {} \;
+
+#Đảm bảo trình thông dịch Python của môi trường ảo nằm trong PATH
+ENV PATH="/usr/src/app/venv/bin:$PATH"
+
+# Copy file cấu hình hệ sinh thái PM2
+COPY ecosystem.config.js /usr/src/app/
+
+# Đảm bảo PM2 phục hồi danh sách quy trình đã lưu khi khởi động và sau đó chạy proxy-proxy
+CMD ["sh", "-c", "pm2 resurrect && pm2-runtime start ecosystem.config.js"]

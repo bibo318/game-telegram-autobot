@@ -1,0 +1,56 @@
+# Use an Ubuntu 24.04 base image
+FROM ubuntu:24.04
+
+# Đặt biến môi trường để tránh lời nhắc tương tác trong quá trình cài đặt gói
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Cài đặt các phụ thuộc cơ bản
+RUN apt-get update && \
+    apt-get install -y wget curl gnupg2 ca-certificates xdg-utils libasound2-dev git python3-pip python3-venv zbar-tools gdebi-core --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Cài đặt Node.js (mới nhất) và PM2
+RUN curl -fsSL https://deb.nodesource.com/setup_current.x -o nodesource_setup.sh && \
+    bash nodesource_setup.sh && \
+    apt-get install -y nodejs && \
+    npm install -g pm2 && \
+    rm nodesource_setup.sh
+
+# Cài đặt Chrome và Chromedriver
+RUN apt-get clean && apt-get autoclean && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt update && \
+    apt-get install -y xdg-utils libasound2-dev && \
+    wget http://launchpadlibrarian.net/660838579/chromium-codecs-ffmpeg-extra_112.0.5615.49-0ubuntu0.18.04.1_arm64.deb && \
+    gdebi -n chromium-codecs-ffmpeg-extra_112.0.5615.49-0ubuntu0.18.04.1_arm64.deb && \
+    wget http://launchpadlibrarian.net/660838574/chromium-browser_112.0.5615.49-0ubuntu0.18.04.1_arm64.deb && \
+    gdebi -n chromium-browser_112.0.5615.49-0ubuntu0.18.04.1_arm64.deb && \
+    wget http://launchpadlibrarian.net/660838578/chromium-chromedriver_112.0.5615.49-0ubuntu0.18.04.1_arm64.deb && \
+    gdebi -n chromium-chromedriver_112.0.5615.49-0ubuntu0.18.04.1_arm64.deb
+
+RUN chromium-browser --version && \
+    chromedriver --version
+
+# Tạo thư mục ứng dụng
+WORKDIR /usr/src/app
+
+# Sao chép các tập lệnh shell và làm cho chúng có thể thực thi được
+COPY docker/* /usr/src/app/
+
+# Tạo và kích hoạt môi trường ảo trong thư mục ứng dụng, sau đó cài đặt các gói Python
+RUN python3 -m venv /usr/src/app/venv && \
+    /usr/src/app/venv/bin/pip install --upgrade pip && \
+    /usr/src/app/venv/bin/pip install wheel selenium Pillow pyzbar qrcode-terminal mitmproxy python-telegram-bot requests
+
+#Sao chép tập lệnh khởi chạy và làm cho nó có thể thực thi được
+RUN find /usr/src/app -type f -name "*.sh" -exec chmod +x {} \;
+
+# Đảm bảo trình thông dịch Python của môi trường ảo nằm trong PATH
+ENV PATH="/usr/src/app/venv/bin:$PATH"
+
+# Copy file cấu hình hệ sinh thái PM2
+COPY ecosystem.config.js /usr/src/app/
+
+#Đảm bảo PM2 phục hồi danh sách quy trình đã lưu khi khởi động và sau đó chạy proxy-proxy
+CMD ["sh", "-c", "pm2 resurrect && pm2-runtime start ecosystem.config.js"]
