@@ -7,47 +7,47 @@ import subprocess
 import requests
 
 def download_file(url, dest):
-    """Download a file from a URL to a destination path."""
+    """Tải tệp xuống từ URL tới đường dẫn đích."""
     try:
         response = requests.get(url)
         response.raise_for_status()  #Đảm bảo chúng tôi nhận thấy phản hồi không tốt
         with open(dest, 'wb') as f:
             f.write(response.content)
-        print(f"Downloaded {url} to {dest}")
+        print(f"Đã tải xuống {url} to {dest}")
     except Exception as e:
-        print(f"Failed to download {url}: {e}")
+        print(f"Không thể tải xuống {url}: {e}")
         sys.exit(1)
 
 def modify_pull_games_script(script_path):
-    """Modify the pull-games.sh script to suit our purpose."""
+    """Sửa đổi tập lệnh pull-games.sh cho phù hợp với mục đích của chúng tôi."""
     script_content = """#!/bin/bash
 
-# Define the target and source directories
+# Xác định thư mục đích và nguồn
 TARGET_DIR="/app"
 GAMES_DIR="$TARGET_DIR/games"
 DEST_DIR="/usr/src/app/games"
 
-# Check if the directory exists and is a git repository
+# Kiểm tra xem thư mục có tồn tại không và có phải là kho lưu trữ git không
 if [ -d "$TARGET_DIR" ] && [ -d "$TARGET_DIR/.git" ]; then
     echo "$TARGET_DIR pulling latest changes."
     cd $TARGET_DIR
     git pull
 elif [ -d "$TARGET_DIR" ] ; then
-    echo "$TARGET_DIR exists but is not a git repository. Removing and cloning afresh."
+    echo "$TARGET_DIR tồn tại nhưng không phải là kho lưu trữ git. Loại bỏ và nhân bản một lần nữa."
     rm -rf $TARGET_DIR
     git clone https://github.com/bibo318/telegram-claim-bot.git $TARGET_DIR
 else
-    echo "$TARGET_DIR does not exist. Cloning repository."
+    echo "$TARGET_DIR không tồn tại. Kho nhân bản."
     git clone https://github.com/bibo318/telegram-claim-bot.git $TARGET_DIR
 fi
 
-# Set the working directory to the cloned repository
+# Đặt thư mục làm việc vào kho lưu trữ nhân bản
 cd $GAMES_DIR
 
-# Create the destination directory
+# Tạo thư mục đích
 mkdir -p $DEST_DIR
 
-# Copy the contents of the games directory recursively
+# Sao chép đệ quy nội dung của thư mục trò chơi
 cp -r $GAMES_DIR/* $DEST_DIR
 
 echo "All files and subdirectories have been copied to $DEST_DIR"
@@ -55,9 +55,9 @@ echo "All files and subdirectories have been copied to $DEST_DIR"
     try:
         with open(script_path, 'w') as f:
             f.write(script_content)
-        print(f"Modified {script_path} successfully.")
+        print(f"Đã sửa đổi {script_path} thành công.")
     except Exception as e:
-        print(f"Failed to modify {script_path}: {e}")
+        print(f"Không thể sửa đổi {script_path}: {e}")
         sys.exit(1)
 
 def check_and_update_games_utils():
@@ -76,12 +76,12 @@ def check_and_update_games_utils():
             #Chạy tập lệnh pull-games.sh
             result = subprocess.run([pull_games_dest], capture_output=True, text=True)
             if result.returncode != 0:
-                print(f"Failed to execute {pull_games_dest}: {result.stderr}")
+                print(f"Không thể thực thi {pull_games_dest}: {result.stderr}")
                 sys.exit(1)
             else:
-                print(f"Successfully executed {pull_games_dest}: {result.stdout}")
+                print(f"Thực hiện thành công {pull_games_dest}: {result.stdout}")
         else:
-            print("pull-games.sh does not exist, skipping the update.")
+            print("pull-games.sh không tồn tại, bỏ qua cập nhật.")
 
 #Đảm bảo trò chơi/tiện ích có mặt trước khi tiến hành nhập
 check_and_update_games_utils()
@@ -92,7 +92,7 @@ try:
     from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
                               ContextTypes, ConversationHandler, MessageHandler, filters)
 except ImportError:
-    print("The 'python-telegram-bot' module is not installed. Installing it now...")
+    print("Mô-đun 'python-telegram-bot' chưa được cài đặt. Đang cài đặt nó bây giờ...")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "python-telegram-bot"])
     from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, Update,
                           InlineKeyboardButton, InlineKeyboardMarkup)
@@ -102,7 +102,7 @@ except ImportError:
 try:
     from utils.pm2 import start_pm2_app, save_pm2
 except ImportError:
-    print("Failed to import PM2 utilities even after attempting to copy the necessary files and directories.")
+    print("Không thể nhập tiện ích PM2 ngay cả sau khi cố gắng sao chép các tệp và thư mục cần thiết.")
     sys.exit(1)
 
 from status import list_pm2_processes, list_all_pm2_processes, get_inactive_directories, get_logs_by_process_name, get_status_logs_by_process_name, fetch_and_process_logs
@@ -123,9 +123,9 @@ inactive_directories = []
 selected_process = None
 
 def load_telegram_token(file_path: str) -> str:
-    """Load the telegram bot token from the specified file."""
+    """Tải mã thông báo bot telegram từ tệp được chỉ định."""
     if not os.path.exists(file_path):
-        logger.error(f"File {file_path} does not exist.")
+        logger.error(f"Tệp {file_path} không tồn tại.")
         sys.exit(1)
 
     with open(file_path, 'r') as file:
@@ -134,14 +134,14 @@ def load_telegram_token(file_path: str) -> str:
     token = config.get("telegramBotToken")
 
     if token:
-        logger.info(f"Token extracted: {token}")
+        logger.info(f"Đã trích xuất mã thông báo: {token}")
         return token
     else:
-        logger.error("telegramBotToken not found in the file.")
+        logger.error("không tìm thấy telegramBotToken trong tệp.")
         sys.exit(1)
 
 def run() -> None:
-    """Run the bot."""
+    """Chạy bot."""
     token = load_telegram_token('variables.txt')
     if not token:
         sys.exit(1)
@@ -170,20 +170,20 @@ def run() -> None:
     application.run_polling()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Starts the conversation and asks the user about their preferred command type."""
+    """Bắt đầu cuộc trò chuyện và hỏi người dùng về loại lệnh ưa thích của họ."""
     await update.message.reply_text(
         '<b>Telegram Claim Bot!\n'
-        'How can I help you?</b>',
+        'Làm thế nào để tôi giúp bạn?</b>',
         parse_mode='HTML',
         reply_markup=ReplyKeyboardRemove(),
     )
 
     #Xác định các nút nội tuyến để chọn màu ô tô
     keyboard = [
-        [InlineKeyboardButton('ALL STATUS', callback_data='status')],
-        [InlineKeyboardButton('SELECT PROCESS', callback_data='process')],
-        [InlineKeyboardButton('Help', callback_data='help')],
-        [InlineKeyboardButton('Exit', callback_data='exit')],
+        [InlineKeyboardButton('TẤT CẢ CÁC TRẠNG THÁI', callback_data='status')],
+        [InlineKeyboardButton('QUY TRÌNH CHỌN', callback_data='process')],
+        [InlineKeyboardButton('Giúp đỡ', callback_data='help')],
+        [InlineKeyboardButton('Thoát', callback_data='exit')],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text('<b>Please choose:</b>', parse_mode='HTML', reply_markup=reply_markup)
@@ -191,7 +191,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return COMMAND_DECISION
 
 async def command_decision(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Asks the user to fill in the mileage or skip."""
+    """Yêu cầu người dùng điền số dặm hoặc bỏ qua."""
     query = update.callback_query
     await query.answer()
     decision = query.data
@@ -209,12 +209,12 @@ async def command_decision(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         return ConversationHandler.END
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Send a message with the help of the bot."""
-    return await send_message(update, context, "Available commands:\n/start - Start the bot\n/status - Check the status of all processes\n/help - Show this help message\n/exit - Exit the bot")
+    """Gửi tin nhắn với sự trợ giúp của bot."""
+    return await send_message(update, context, "Các lệnh có sẵn:\n/start -Khởi động bot\n/status -Kiểm tra trạng thái của tất cả các tiến trình\n/help -Hiển thị thông báo trợ giúp này\n/exit -Thoát bot")
 
 async def exit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Exit the bot."""
-    return await send_message(update, context, "Goodbye!")
+    return await send_message(update, context, "Tạm biệt!")
 
 #khu vực Quy trình duy nhất
 
@@ -223,14 +223,14 @@ async def select_process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     await get_processes()
 
-    """Select a process to run."""
+    """Chọn một tiến trình để chạy."""
     query = update.callback_query
 
     keyboard = []
 
-    print("Stopped Processes: " + ', '.join(stopped_processes))
-    print("Running Processes: " + ', '.join(running_processes))
-    print("Inactive Directories: " + ', '.join(inactive_directories))
+    print("Quá trình đã dừng: " + ', '.join(stopped_processes))
+    print("Tiến trình đang chạy: " + ', '.join(running_processes))
+    print("Thư mục không hoạt động: " + ', '.join(inactive_directories))
 
     for process in stopped_processes:
         keyboard.append([InlineKeyboardButton(process + u" 🔴", callback_data=process)])
@@ -242,30 +242,30 @@ async def select_process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         keyboard.append([InlineKeyboardButton(directory + u" ⚫", callback_data=directory)])
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text('<b>Choose an option:</b>', parse_mode='HTML', reply_markup=reply_markup)
+    await query.message.reply_text('<b>Chọn một sự lựa chọn:</b>', parse_mode='HTML', reply_markup=reply_markup)
 
     return PROCESS_DECISION
 
 async def process_decision(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     global selected_process
 
-    """Asks the user to fill in the mileage or skip."""
+    """Yêu cầu người dùng điền số dặm hoặc bỏ qua."""
     query = update.callback_query
     await query.answer()
     selected_process = query.data
 
     #Xác định các nút nội tuyến để chọn màu ô tô
     keyboard = [
-        [InlineKeyboardButton('STATUS', callback_data='status')],
+        [InlineKeyboardButton('Trạng thái', callback_data='status')],
         [InlineKeyboardButton('LOGS', callback_data='logs')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text('<b>Please choose:</b>', parse_mode='HTML', reply_markup=reply_markup)
+    await query.message.reply_text('<b>Xin vui lòng chọn:</b>', parse_mode='HTML', reply_markup=reply_markup)
 
     return PROCESS_COMMAND_DECISION
 
 async def process_command_decision(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Asks the user to fill in the mileage or skip."""
+    """Yêu cầu người dùng điền số dặm hoặc bỏ qua."""
     query = update.callback_query
     await query.answer()
     decision = query.data
@@ -275,21 +275,21 @@ async def process_command_decision(update: Update, context: ContextTypes.DEFAULT
     elif decision == 'logs':
         return await logs_process(update, context)
     else:
-        await query.edit_message_text(f"Invalid command: {decision}")
+        await query.edit_message_text(f"Lệnh không hợp lệ: {decision}")
         return ConversationHandler.END
 
 async def status_process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Send a message with the status of the bot."""
+    """Gửi tin nhắn với trạng thái của bot."""
 
     logs = get_status_logs_by_process_name(selected_process)
-    await send_message(update, context, (f"{logs}." if logs != "" else f"The process {selected_process} was not found."))
+    await send_message(update, context, (f"{logs}." if logs != "" else f"Không tìm thấy quá trình {selected_process}."))
     return ConversationHandler.END
 
 async def logs_process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Send a message with the status of the bot."""
+    """Gửi tin nhắn với trạng thái của bot."""
 
     logs = get_logs_by_process_name(selected_process)
-    await send_message(update, context, (f"{logs}." if logs != "" else f"The process {selected_process} was not found."))
+    await send_message(update, context, (f"{logs}." if logs != "" else f"Không tìm thấy quá trình {selected_process}."))
     return ConversationHandler.END
 
 def find_index(lst, value):
@@ -318,14 +318,14 @@ async def status_all(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 def show_logs(process) -> str:
-    """Send a message with the status of the bot."""
+    """Gửi tin nhắn với trạng thái của bot."""
 
     try:
         name, balance, next_claim_at, log_status = fetch_and_process_logs(process.strip())
-        return f"{name}:\n\t BALANCE: {balance}\n\tNEXT CLAIM AT: {next_claim_at}\n\tLOG STATUS: {log_status}"
+        return f"{name}:\n\t BALANCE: {balance}\n\tYÊU CẦU TIẾP THEO TẠI: {next_claim_at}\n\TRẠNG THÁI LOGS: {log_status}"
     except Exception as e:
-        print(f"Error: {e}")
-        return f"{process}: ERROR getting information."
+        print(f"Lỗi: {e}")
+        return f"{process}: LỖI lấy thông tin."
 
 #vùng cuối cùng
 #khu vực sử dụng
@@ -345,7 +345,7 @@ async def send_message(update: Update, context: ContextTypes.DEFAULT_TYPE, text:
         await update.message.reply_text(text)
     else:
         #Xử lý các trường hợp khác hoặc ghi lại lỗi/cảnh báo
-        logger.warning('skip_mileage was called without a message or callback_query context.')
+        logger.warning('Skip_mileage được gọi mà không có thông báo hoặc bối cảnh callback_query.')
 
 async def get_processes():
     global stopped_processes, running_processes, inactive_directories
@@ -375,12 +375,12 @@ def main() -> None:
             #Chạy tập lệnh pull-games.sh
             result = subprocess.run([pull_games_dest], capture_output=True, text=True)
             if result.returncode != 0:
-                print(f"Failed to execute {pull_games_dest}: {result.stderr}")
+                print(f"Không thể thực thi {pull_games_dest}: {result.stderr}")
                 sys.exit(1)
             else:
-                print(f"Successfully executed {pull_games_dest}: {result.stdout}")
+                print(f"Thực hiện thành công {pull_games_dest}: {result.stdout}")
         else:
-            print("pull-games.sh does not exist, skipping the update.")
+            print("pull-games.sh không tồn tại, bỏ qua cập nhật.")
 
     list_pm2_processes = set(list_all_pm2_processes())
 
@@ -388,24 +388,24 @@ def main() -> None:
         script = "games/tg-bot.py"
 
         pm2_session = "Telegram-Bot"
-        print(f"You could add the new/updated session to PM use: pm2 start {script} --interpreter venv/bin/python3 --name {pm2_session} -- {pm2_session}", 1)
-        user_choice = input("Enter 'e' to exit, 'a' or <enter> to automatically add to PM2: ").lower()
+        print(f"Bạn có thể thêm phiên mới/cập nhật vào sử dụng PM: pm2 start {script} --interpreter venv/bin/python3 --name {pm2_session} -- {pm2_session}", 1)
+        user_choice = input("Nhập 'e' để thoát, 'a' hoặc <enter> để tự động thêm vào PM2: ").lower()
 
         if user_choice == "e":
-            print("Exiting script. You can resume the process later.", 1)
+            print("Đang thoát tập lệnh. Bạn có thể tiếp tục quá trình này sau.", 1)
             sys.exit()
         elif user_choice == "a" or not user_choice:
             start_pm2_app(script, pm2_session, pm2_session)
-            user_choice = input("Should we save your PM2 processes? (Y/n): ").lower()
+            user_choice = input("Chúng tôi có nên lưu quy trình PM2 của bạn không? (Y/n): ").lower()
             if user_choice == "y" or not user_choice:
                 save_pm2()
-            print(f"You can now watch the session log into PM2 with: pm2 logs {pm2_session}", 2)
+            print(f"Bây giờ bạn có thể xem nhật ký phiên vào PM2 bằng: nhật ký pm2 {pm2_session}", 2)
             sys.exit()
 
     run()
 
 async def run_command(command: str) -> str:
-    """Execute a shell command and return its output."""
+    """Thực thi lệnh shell và trả về đầu ra của nó."""
     proc = await asyncio.create_subprocess_shell(
         command,
         stdout=subprocess.PIPE,

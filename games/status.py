@@ -9,14 +9,14 @@ def run_command(command):
 
 def parse_time_from_log(line):
     try:
-        time_str = line.split("Need to wait until ")[1].split(' before')[0]
+        time_str = line.split("Cần đợi cho đến khi ")[1].split(' before')[0]
         try:
             parsed_time = datetime.strptime(time_str, "%d %B - %H:%M")
         except ValueError:
             parsed_time = datetime.strptime(time_str, "%H:%M")
         return parsed_time
     except Exception as e:
-        print(f"Failed to parse time from line: {line}. Error: {e}")
+        print(f"Không thể phân tích thời gian từ dòng: {line}. Lỗi: {e}")
         return None
 
 def truncate_and_pad(string, length):
@@ -92,7 +92,7 @@ def remove_directories(dir_name):
     run_command(f"rm -rf ./selenium/{dir_name}")
     run_command(f"rm -rf ./backups/{dir_name}")
     run_command(f"rm -rf ./screenshots/{dir_name}")
-    print(f"Removed directories for {dir_name}")
+    print(f"Đã xóa thư mục cho {dir_name}")
 
 def list_all_pm2_processes():
     return run_command("pm2 list --no-color | awk '{{print $4}}'").splitlines()
@@ -119,10 +119,10 @@ def delete_process_by_id(process_id, process_list):
         run_command(f"pm2 delete {process_name}")
         run_command(f"pm2 save")
         remove_directories(process_name)
-        print(f"Stopped and deleted process {process_name} from PM2.")
+        print(f"Đã dừng và xóa quá trình {process_name} khỏi PM2.")
         process_list.pop(process_id - 1)
     else:
-        print("Invalid process ID.")
+        print("ID tiến trình không hợp lệ.")
 
 def delete_processes_by_ids(ids, process_list):
     for process_id in sorted(ids, reverse=True):
@@ -135,16 +135,16 @@ def delete_process_by_pattern(pattern, process_list):
             run_command(f"pm2 delete {process[0]}")
             run_command(f"pm2 save")
             remove_directories(process[0])
-            print(f"Stopped and deleted process {process[0]} from PM2.")
+            print(f"Đã dừng và xóa quá trình {process[0]} khỏi PM2.")
             process_list.remove(process)
 
 def show_logs(process_id, process_list, lines=30):
     print(get_logs(process_id, process_list, lines))
-    input("Press enter to continue...")
+    input("Nhấn Enter để tiếp tục...")
 
 def get_logs(process_id, process_list, lines=30):
     if process_id > len(process_list):
-        return "Invalid process ID."
+        return "ID tiến trình không hợp lệ."
     
     return get_logs_by_process_name(process_list[process_id - 1][0], lines)
 
@@ -157,11 +157,11 @@ def get_logs_by_process_name(process_name, lines=30):
 
 def show_status_logs(process_id, process_list):
     print(get_status_logs(process_id, process_list))
-    input("Press enter to continue...")
+    input("Nhấn Enter để tiếp tục...")
 
 def get_status_logs(process_id, process_list):
     if process_id > len(process_list):
-        return "Invalid process ID."
+        return "ID tiến trình không hợp lệ."
     
     return get_logs_by_process_name(process_list[process_id - 1][0])
 
@@ -184,33 +184,33 @@ def parse_delete_ids(delete_ids_str):
     return sorted(ids)
 
 def main():
-    print("Reading the data from PM2 - this may take some time if you have a lot of games.")
+    print("Đọc dữ liệu từ PM2 -việc này có thể mất chút thời gian nếu bạn có nhiều trò chơi.")
     while True:
         stopped_processes = list_pm2_processes("stopped")
         running_processes = list_pm2_processes("online")
         inactive_directories = get_inactive_directories()
 
-        print(f"Found {len(inactive_directories)} inactive directories in Selenium.")
+        print(f"Đã tìm thấy {len(inactive_directories)} thư mục không hoạt động trong Selenium.")
 
-        print("\nInactive Processes:")
+        print("\nQuy trình không hoạt động:")
         stopped_process_list = display_processes(stopped_processes + inactive_directories, "Stopped", sort_by="name", start_index=1)
-        print("\nActive Processes:")
+        print("\nQuy trình hoạt động:")
         running_process_list = display_processes(running_processes, "Running", sort_by="name", start_index=len(stopped_process_list) + 1)
 
         print("\nOptions:")
-        print("'t' - Sort by time of next claim")
-        print("'delete [ID]' - Delete process by number (e.g. single ID - '1', range '1-3' or multiple '1,3')")
-        print("'delete [pattern]' - Delete all processes matching the pattern (e.g. HOT, Blum, Wave)")
-        print("'status [ID]' - Show the last 20 balances and status of the selected process")
-        print("'logs [ID] [lines]' - Show the last 'n' lines of PM2 logs for the process (default: 30)")
-        print("'exit' or hit enter - Exit the program")
+        print("'t' - Sắp xếp theo thời gian yêu cầu tiếp theo")
+        print("'delete [ID]' - Xóa quy trình theo số (ví dụ: một ID -'1', phạm vi '1-3' hoặc nhiều '1,3')")
+        print("'delete [pattern]' - Xóa tất cả các quy trình khớp với mẫu (ví dụ: HOT, Blum, Wave)")
+        print("'status [ID]' - Hiển thị 20 số dư cuối cùng và trạng thái của quy trình đã chọn")
+        print("'logs [ID] [lines]' - Hiển thị 'n' dòng cuối cùng của nhật ký PM2 cho quy trình (mặc định: 30)")
+        print("'exit' or hit enter - Thoát khỏi chương trình")
 
-        user_input = input("\nEnter your choice: ").strip()
+        user_input = input("\nNhập lựa chọn của bạn: ").strip()
 
         if user_input == 't':
             display_processes(stopped_processes + inactive_directories, "Stopped", sort_by="time", start_index=1)
             display_processes(running_processes, "Running", sort_by="time", start_index=len(stopped_process_list) + 1)
-            input("Press enter to continue...")
+            input("Nhấn Enter để tiếp tục...")
         elif user_input.startswith("delete "):
             try:
                 delete_ids_str = user_input.split()[1]
@@ -227,7 +227,7 @@ def main():
                 else:
                     show_status_logs(status_id - len(stopped_process_list), running_process_list)
             except ValueError:
-                print("Invalid ID.")
+                print("ID không hợp lệ.")
         elif user_input.startswith("logs "):
             try:
                 logs_id = int(user_input.split()[1])
@@ -237,11 +237,11 @@ def main():
                 else:
                     show_logs(logs_id - len(stopped_process_list), running_process_list, lines)
             except ValueError:
-                print("Invalid input.")
+                print("Đâu vao không hợp lệ.")
         elif user_input == "exit" or user_input == "":
             break
         else:
-            print("Invalid option. Please try again.")
+            print("Tùy chọn không hợp lệ. Vui lòng thử lại.")
 
 if __name__ == "__main__":
     main()
