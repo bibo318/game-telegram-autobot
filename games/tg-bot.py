@@ -186,7 +186,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         [InlineKeyboardButton('Thoát', callback_data='exit')],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text('<b>Please choose:</b>', parse_mode='HTML', reply_markup=reply_markup)
+    await update.message.reply_text('<b>Xin vui lòng chọn:</b>', parse_mode='HTML', reply_markup=reply_markup)
 
     return COMMAND_DECISION
 
