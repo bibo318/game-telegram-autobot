@@ -62,10 +62,10 @@ class PocketFiClaimer(Claimer):
             self.set_cookies()
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.", 1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.", 1)
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 1)
 
     def full_claim(self):
         self.step = "100"
@@ -128,9 +128,9 @@ class PocketFiClaimer(Claimer):
                 self.output(f"Step {self.step} - {balance_text} {balance_part}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority) 
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority) 
 
         self.increase_step()
 
@@ -145,7 +145,7 @@ class PocketFiClaimer(Claimer):
 
         for attempt in range(1, max_attempts + 1):
             try:
-                self.output(f"Step {self.step} - Get the wait time...", 3)
+                self.output(f"Bước {self.step} -Lấy thời gian chờ...", 3)
                 xpath = "//p[contains(text(), 'burn in')]"
                 elements = self.monitor_element(xpath, 10)
                 if elements:
@@ -155,10 +155,10 @@ class PocketFiClaimer(Claimer):
                         results = [convert_to_minutes(wait_time)]
                         return results
             except Exception as e:
-                self.output(f"Step {self.step} - An error occurred on attempt {attempt}: {e}", 3)
-                return "Unknown"
+                self.output(f"Bước {self.step} -Đã xảy ra lỗi khi thử {attempt}: {e}", 3)
+                return "không xác định"
 
-        return "Unknown"
+        return "không xác định"
 
 def main():
     claimer = PocketFiClaimer()

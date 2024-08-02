@@ -79,7 +79,7 @@ class LumCityAUClaimer(LumCityClaimer):
 
         def handle_claim_process():
             xpath = "//button[contains(normalize-space(.), 'Claim')]"
-            self.move_and_click(xpath, 20, True, "click the 'Claim' button", self.step, "clickable")
+            self.move_and_click(xpath, 20, True, "nhấp vào nút 'Claim", self.step, "clickable")
             self.increase_step()
 
             reward_xpath = "//div[contains(@class, '_msgWrapper_7jeg3_57')]//span[1]"
@@ -117,13 +117,13 @@ class LumCityAUClaimer(LumCityClaimer):
         try:
             remaining_wait_time = int(remaining_wait_time)
         except ValueError:
-            self.output("STATUS: Wait time is unknown due to non-numeric input.", 1)
+            self.output("STATUS: Wait time is không xác định due to non-numeric input.", 1)
             return 60
 
         if remaining_wait_time > 0:
             if remaining_wait_time < 5 or self.settings["forceClaim"]:
                 self.settings['forceClaim'] = True
-                self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+                self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù đắp ngẫu nhiên nên việc áp dụng: settings['forceClaim'] = True", 3)
             else:
                 self.output(f"STATUS: Wait time is {remaining_wait_time} minutes and off-set of {self.random_offset}.", 1)
                 return remaining_wait_time + self.random_offset
@@ -133,9 +133,9 @@ class LumCityAUClaimer(LumCityClaimer):
                 remaining_wait_time = handle_claim_process()
 
                 if remaining_wait_time == 0:
-                    self.output(f"Step {self.step} - The wait timer is still showing: Filled.", 1)
+                    self.output(f"Bước {self.step} -Đồng hồ chờ vẫn hiển thị: Đã lấp đầy.", 1)
                     self.output(f"Step {self.step} - This means either the claim failed, or there is lag in the game.", 1)
-                    self.output(f"Step {self.step} - We'll check back in 1 hour to see if the claim processed and if not try again.", 2)
+                    self.output(f"Bước {self.step} -Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại đã được xử lý chưa và nếu chưa hãy thử lại.", 2)
                     return 60
                 else:
                     total_time = self.apply_random_offset(remaining_wait_time)
@@ -144,16 +144,16 @@ class LumCityAUClaimer(LumCityClaimer):
             else:
                 if remaining_wait_time:
                     total_time = self.apply_random_offset(remaining_wait_time)
-                    self.output(f"Step {self.step} - Not Time to claim this wallet yet. Wait for {total_time} minutes until the storage is filled.", 2)
+                    self.output(f"Bước {self.step} -Chưa đến lúc nhận ví này. Đợi {total_time} phút cho đến khi bộ nhớ đầy.", 2)
                     return total_time
                 else:
-                    self.output(f"Step {self.step} - No wait time data found? Let's check again in one hour.", 2)
+                    self.output(f"Bước {self.step} -Không tìm thấy dữ liệu về thời gian chờ? Hãy kiểm tra lại sau một giờ nữa.", 2)
                     return 60
         except TimeoutException:
-            self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.", 1)
+            self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.", 1)
             return 60
         except Exception as e:
-            self.output(f"STATUS: An error occurred: {e}\nLet's wait an hour and try again", 1)
+            self.output(f"STATUS: Đã xảy ra lỗi: {e}\nLet's wait an hour and try again", 1)
             return 60
 
 def main():

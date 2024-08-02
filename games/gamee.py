@@ -77,10 +77,10 @@ class GameeClaimer(Claimer):
             self.set_cookies()
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.",1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.",1)
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}",1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}",1)
 
     def full_claim(self):
         self.step = "100"
@@ -100,20 +100,20 @@ class GameeClaimer(Claimer):
             button = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath)))
             if button:
                 button.click()
-                self.output(f"Step {self.step} - Successfully clicked 'MINING' button.", 3)
-                status_text = "STATUS: Start MINING"
+                self.output(f"Bước {self.step} -Đã nhấp thành công vào nút 'Khai thác'.", 3)
+                status_text = "TÌNH TRẠNG: Bắt đầu KHAI THÁC"
 
         except TimeoutException:
             try:
 
                 xpath = "//div[contains(@class, 'cYeqKR')]" #Nút KHAI THÁC
                 button = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath)))
-                self.output(f"Step {self.step} - Currently mining: {'YES' if button else 'NO'}.", 3)
-                status_text = "STATUS: Currently mining" if button else "STATUS: Not mining"
+                self.output(f"Bước {self.step} -Hiện đang khai thác: {'YES' if button else 'NO'}.", 3)
+                status_text = "TÌNH TRẠNG: Hiện đang khai thác" if button else "TÌNH TRẠNG: Không khai thác"
 
             except TimeoutException:
-                self.output(f"Step {self.step} - MINING button NOT found .\n",3)
-                status_text = "STATUS: MINING button NOT found"
+                self.output(f"Bước {self.step} -KHÔNG tìm thấy nút KHAI THÁC .\n",3)
+                status_text = "TRẠNG THÁI: KHÔNG tìm thấy nút KHAI THÁC"
 
         self.increase_step()
 
@@ -147,10 +147,10 @@ class GameeClaimer(Claimer):
         wait_time = self.get_wait_time(self.step, "pre-claim") 
 
         if wait_time is None:
-            self.output(f"{status_text} - Failed to get wait time. Next try in 60 minutes", 3)
+            self.output(f"{status_text} - Không thể có được thời gian chờ đợi. Lần thử tiếp theo sau 60 phút", 3)
             return 60
         else:
-            self.output(f"{status_text} - Next try in {self.show_time(wait_time)}.", 2)
+            self.output(f"{status_text} - Tiếp theo thử vào {self.show_time(wait_time)}.", 2)
             return wait_time
 
     def get_balance(self, claimed=False):
@@ -169,7 +169,7 @@ class GameeClaimer(Claimer):
         priority = max(self.settings['verboseLevel'], default_priority)
 
         #Xây dựng số dư cụ thể XPath
-        balance_text = f'{prefix} BALANCE:' if claimed else f'{prefix} BALANCE:'
+        balance_text = f'{prefix} Số Dư:' if claimed else f'{prefix} Số Dư:'
         balance_xpath = "//h2[@id='animated-mining-balance-id']"
 
         try:
@@ -178,12 +178,12 @@ class GameeClaimer(Claimer):
             #Kiểm tra xem phần tử có phải là Không và xử lý số dư
             if element:
                 cleaned_balance = self.strip_html_and_non_numeric(element)
-                self.output(f"Step {self.step} - {balance_text} {cleaned_balance}", priority)
+                self.output(f"Bước {self.step} - {balance_text} {cleaned_balance}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
 #Hàm bước tăng dần, giả sử để xử lý logic bước tiếp theo
         self.increase_step()
 
@@ -203,19 +203,19 @@ class GameeClaimer(Claimer):
             element = self.monitor_element(profit_xpath)
             if element:
                 profit_part = self.strip_html_and_non_numeric(element)
-                self.output(f"Step {self.step} - {profit_text} {profit_part}", priority)
+                self.output(f"Bước {self.step} - {profit_text} {profit_part}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Profit/Hour:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Lợi nhuận/Giờ:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
 #Hàm bước tăng dần, giả sử để xử lý logic bước tiếp theo
         self.increase_step()
 
     def get_wait_time(self, step_number="108", beforeAfter="pre-claim"):
         try:
 
-            self.output(f"Step {self.step} - check if the timer is elapsing...", 3)
+            self.output(f"Bước {self.step} -kiểm tra xem đồng hồ đã hết chưa...", 3)
 
             xpath = "(//p[contains(@class, 'bEEYcp')])[1]"
             actual = float(self.monitor_element(xpath, 15))
@@ -231,11 +231,11 @@ class GameeClaimer(Claimer):
             return wait_time          
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}", 3)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 3)
             if self.settings['debugIsOn']:
                 screenshot_path = f"{self.screenshots_path}/{self.step}_get_wait_time_error.png"
                 self.driver.save_screenshot(screenshot_path)
-                self.output(f"Screenshot saved to {screenshot_path}", 3)
+                self.output(f"Ảnh chụp màn hình đã được lưu vào {screenshot_path}", 3)
 
             return None
 

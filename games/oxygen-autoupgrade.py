@@ -66,32 +66,32 @@ class OxygenAUClaimer(OxygenClaimer):
             remaining_wait_time = (sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)) + self.random_offset
             if remaining_wait_time < 5 or self.settings["forceClaim"]:
                 self.settings['forceClaim'] = True
-                self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+                self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù đắp ngẫu nhiên nên việc áp dụng: settings['forceClaim'] = True", 3)
             else:
-                self.output(f"STATUS: Considering {wait_time_text}, we'll go back to sleep for {remaining_wait_time} minutes.", 1)
+                self.output(f"TÌNH TRẠNG: Xem xét {wait_time_text}, chúng tôi sẽ quay lại ngủ trong {remaining_wait_time} phút.", 1)
                 return remaining_wait_time
 
-        if wait_time_text == "Unknown":
+        if wait_time_text == "không xác định":
             return 15
 
         try:
-            self.output(f"Step {self.step} - The pre-claim wait time is : {wait_time_text} and random offset is {self.random_offset} minutes.", 1)
+            self.output(f"Bước {self.step} -Thời gian chờ yêu cầu trước là: {wait_time_text} và thời gian bù trừ ngẫu nhiên là {self.random_offset} phút.", 1)
             self.increase_step()
 
             if wait_time_text == self.pot_full or self.settings['forceClaim']:
                 try:
                     xpath = "//div[@class='farm_btn']"
-                    button = self.move_and_click(xpath, 10, True, "click the 'Claim' button", self.step, "clickable")
+                    button = self.move_and_click(xpath, 10, True, "nhấp vào nút 'Claim", self.step, "clickable")
                     self.increase_step()
 
-                    self.output(f"Step {self.step} - Waiting 10 seconds for the totals and timer to update...", 3)
+                    self.output(f"Bước {self.step} -Chờ 10 giây để cập nhật tổng số và bộ hẹn giờ...", 3)
                     time.sleep(10)
                     self.increase_step()
                     
                     self.click_daily_buttons()
                     self.increase_step()
 
-                    self.output(f"Step {self.step} - Waiting 10 seconds for the totals and timer to update...", 3)
+                    self.output(f"Bước {self.step} -Chờ 10 giây để cập nhật tổng số và bộ hẹn giờ...", 3)
                     time.sleep(10)
 
                     wait_time_text = self.get_wait_time(self.step, "post-claim")
@@ -121,18 +121,18 @@ class OxygenAUClaimer(OxygenClaimer):
                             self.output(f"Step {self.step} - The date and time of the box claim has been updated to {self.box_claim}.", 3)
 
                     if wait_time_text == self.pot_full:
-                        self.output(f"STATUS: The wait timer is still showing: Filled.", 1)
+                        self.output(f"TRẠNG THÁI: Đồng hồ chờ vẫn hiển thị: Đã đầy", 1)
                         self.output(f"Step {self.step} - This means either the claim failed, or there is lag in the game.", 1)
-                        self.output(f"Step {self.step} - We'll check back in 1 hour to see if the claim processed and if not try again.", 2)
+                        self.output(f"Bước {self.step} -Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại đã được xử lý chưa và nếu chưa hãy thử lại.", 2)
                     else:
-                        self.output(f"STATUS: Successful Claim: Next claim {wait_time_text} / {total_wait_time} minutes.", 1)
+                        self.output(f"TRẠNG THÁI: Xác nhận quyền sở hữu thành công: Yêu cầu tiếp theo {wait_time_text} /{total_wait_time} phút.", 1)
                     return max(60, total_wait_time)
 
                 except TimeoutException:
-                    self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.", 1)
+                    self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.", 1)
                     return 60
                 except Exception as e:
-                    self.output(f"STATUS: An error occurred while trying to claim: {e}\nLet's wait an hour and try again", 1)
+                    self.output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}\nHãy đợi một giờ và thử lại", 1)
                     return 60
 
             else:
@@ -141,13 +141,13 @@ class OxygenAUClaimer(OxygenClaimer):
                     total_time = sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)
                     total_time += 1
                     total_time = max(5, total_time) 
-                    self.output(f"Step {self.step} - Not Time to claim this wallet yet. Wait for {total_time} minutes until the storage is filled.", 2)
+                    self.output(f"Bước {self.step} -Chưa đến lúc nhận ví này. Đợi {total_time} phút cho đến khi bộ nhớ đầy.", 2)
                     return total_time 
                 else:
-                    self.output(f"Step {self.step} - No wait time data found? Let's check again in one hour.", 2)
+                    self.output(f"Bước {self.step} -Không tìm thấy dữ liệu về thời gian chờ? Hãy kiểm tra lại sau một giờ nữa.", 2)
                     return 60
         except Exception as e:
-            self.output(f"Step {self.step} - An unexpected error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi không mong muốn: {e}", 1)
             return 60
         
     def get_balance(self, claimed=False):
@@ -195,9 +195,9 @@ class OxygenAUClaimer(OxygenClaimer):
             }
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)
 
         self.increase_step()
 

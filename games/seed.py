@@ -65,10 +65,10 @@ class SeedClaimer(Claimer):
                 json.dump(cookies, file)
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.",1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.",1)
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}",1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}",1)
 
     def full_claim(self):
         self.step = "100"
@@ -76,31 +76,31 @@ class SeedClaimer(Claimer):
         self.launch_iframe()
 
         xpath = "//button[contains(text(), 'Claim')]"
-        self.move_and_click(xpath, 20, True, "check for Mystery Box (may not be present)", self.step, "clickable")
+        self.move_and_click(xpath, 20, True, "kiểm tra Mystery Box (có thể không có)", self.step, "clickable")
 
         xpath = "//div[contains(text(), 'Tap 10')]"    
-        self.move_and_click(xpath, 10, True, "check if tree tap blocking game (may not be present)", self.step, "clickable")
+        self.move_and_click(xpath, 10, True, "kiểm tra xem Game chặn tree tap (có thể không có)", self.step, "clickable")
         self.increase_step()
 
         xpath = "//button[contains(text(), 'CHECK NEWS')]"
-        self.move_and_click(xpath, 20, True, "check for NEWS (may not be present)", self.step, "clickable")
+        self.move_and_click(xpath, 20, True, "kiểm tra TIN TỨC (có thể không có mặt)", self.step, "clickable")
         
         #NHẬN GIỮA
         xpath = "//img[contains(@src,'inventory/worm')]"
-        self.move_and_click(xpath, 20, True, "check for WORM (may not be present)", self.step, "clickable")
+        self.move_and_click(xpath, 20, True, "kiểm tra WORM (có thể không có)", self.step, "clickable")
 
         xpath = "//button[.//p[contains(text(), 'Sell now')]]"
-        self.move_and_click(xpath, 20, True, "sell WORM (may not be present)", self.step, "clickable")
+        self.move_and_click(xpath, 20, True, "bán WORM (có thể không có)", self.step, "clickable")
         
         #NHẬN TIỀN THƯỞNG HÀNG NGÀY
         xpath = "//button[.//img[contains(@src, 'daily')]]"
-        self.move_and_click(xpath, 20, True, "check for DAILY BONUS (may not be present)", self.step, "clickable")
+        self.move_and_click(xpath, 20, True, "kiểm tra TIỀN THƯỞNG HÀNG NGÀY (có thể không có mặt)", self.step, "clickable")
 
         xpath = "//button[count(.//img) = 1 and .//img[contains(@src, 'daily/')]]"
-        self.move_and_click(xpath, 20, True, "get DAILY BONUS (may not be present)", self.step, "clickable")
+        self.move_and_click(xpath, 20, True, "nhận TIỀN THƯỞNG HÀNG NGÀY (có thể không có mặt)", self.step, "clickable")
 
         xpath = "//button[contains(text(), 'Got it')]"
-        self.move_and_click(xpath, 20, True, "exit DAILY BONUS (may not be present)", self.step, "clickable")
+        self.move_and_click(xpath, 20, True, "thoát TIỀN THƯỞNG HÀNG NGÀY (có thể không có)", self.step, "clickable")
 
         self.get_balance(False)
         self.get_profit_hour(False)
@@ -112,26 +112,26 @@ class SeedClaimer(Claimer):
             remaining_wait_time = (sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)) + self.random_offset
             if remaining_wait_time < 5 or self.settings["forceClaim"]:
                 self.settings['forceClaim'] = True
-                self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+                self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù ngẫu nhiên nên áp dụng: cài đặt['forceClaim'] = True", 3)
             else:
-                self.output(f"STATUS: Considering {wait_time_text}, we'll go back to sleep for {remaining_wait_time} minutes.", 1)
+                self.output(f"TÌNH TRẠNG: Xem xét {wait_time_text}, chúng tôi sẽ quay lại ngủ trong {remaining_wait_time} phút.", 1)
                 return remaining_wait_time
 
-        if wait_time_text == "Unknown":
+        if wait_time_text == "không xác định":
             return 15
 
         try:
-            self.output(f"Step {self.step} - The pre-claim wait time is : {wait_time_text} and random offset is {self.random_offset} minutes.", 1)
+            self.output(f"Bước {self.step} -Thời gian chờ yêu cầu trước là: {wait_time_text} và thời gian bù trừ ngẫu nhiên là {self.random_offset} phút.", 1)
             self.increase_step()
 
             if wait_time_text == "Filled" or self.settings['forceClaim']:
                 try:
                     xpath = "//button[contains(text(), 'Claim')]"
-                    button = self.move_and_click(xpath, 10, True, "click the 'Claim' button", self.step, "clickable")
+                    button = self.move_and_click(xpath, 10, True, "nhấp vào nút 'Claim'", self.step, "clickable")
                     self.increase_step()
 
                     #Bây giờ hãy cho trang web một vài giây để cập nhật.
-                    self.output(f"Step {self.step} - Waiting 10 seconds for the totals and timer to update...", 3)
+                    self.output(f"Bước {self.step} -Chờ 10 giây để cập nhật tổng số và bộ hẹn giờ...", 3)
                     time.sleep(10)
 
                     wait_time_text = self.get_wait_time(self.step, "post-claim")
@@ -143,18 +143,18 @@ class SeedClaimer(Claimer):
                     self.get_profit_hour(True)
 
                     if wait_time_text == "Filled":
-                        self.output(f"STATUS: The wait timer is still showing: Filled.", 1)
-                        self.output(f"Step {self.step} - This means either the claim failed, or there is >4 minutes lag in the game.", 1)
-                        self.output(f"Step {self.step} - We'll check back in 1 hour to see if the claim processed and if not try again.", 2)
+                        self.output(f"TRẠNG THÁI: Đồng hồ chờ vẫn hiển thị: Đã đầy.", 1)
+                        self.output(f"Bước {self.step} -Điều này có nghĩa là xác nhận quyền sở hữu không thành công hoặc có độ trễ >4 phút trong trò chơi.", 1)
+                        self.output(f"Bước {self.step} -Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại đã được xử lý chưa và nếu chưa hãy thử lại.", 2)
                     else:
-                        self.output(f"STATUS: Successful Claim: Next claim {wait_time_text} / {total_wait_time} minutes.",1)
+                        self.output(f"TRẠNG THÁI: Xác nhận quyền sở hữu thành công: Yêu cầu tiếp theo {wait_time_text} /{total_wait_time} phút.",1)
                     return max(60, total_wait_time)
 
                 except TimeoutException:
-                    self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.", 1)
+                    self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.", 1)
                     return 60
                 except Exception as e:
-                    self.output(f"STATUS: An error occurred while trying to claim: {e}\nLet's wait an hour and try again", 1)
+                    self.output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}\nHãy đợi một giờ và thử lại", 1)
                     return 60
 
             else:
@@ -164,13 +164,13 @@ class SeedClaimer(Claimer):
                     total_time = sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)
                     total_time += 1
                     total_time = max(5, total_time)  #Đợi ít nhất 5 phút hoặc thời gian
-                    self.output(f"Step {self.step} - Not Time to claim this wallet yet. Wait for {total_time} minutes until the storage is filled.", 2)
+                    self.output(f"Bước {self.step} -Chưa đến lúc nhận ví này. Đợi {total_time} phút cho đến khi bộ nhớ đầy.", 2)
                     return total_time
                 else:
-                    self.output(f"Step {self.step} - No wait time data found? Let's check again in one hour.", 2)
+                    self.output(f"Bước {self.step} -Không tìm thấy dữ liệu về thời gian chờ? Hãy kiểm tra lại sau một giờ nữa.", 2)
                     return 60  #Thời gian chờ mặc định khi không tìm thấy thời gian cụ thể cho đến khi được lấp đầy.
         except Exception as e:
-            self.output(f"Step {self.step} - An unexpected error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi không mong muốn: {e}", 1)
             return 60  #Thời gian chờ mặc định trong trường hợp xảy ra lỗi không mong muốn
 
     def get_balance(self, claimed=False):
@@ -197,9 +197,9 @@ class SeedClaimer(Claimer):
                 self.output(f"Step {self.step} - {balance_text} {balance_part}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
 #Hàm bước tăng dần, giả sử để xử lý logic bước tiếp theo
         self.increase_step()
 
@@ -224,12 +224,12 @@ class SeedClaimer(Claimer):
             #Kiểm tra xem phần tử có phải là Không và xử lý số dư
             if element:
                 profit_part = element
-                self.output(f"Step {self.step} - {profit_text} {profit_part}", priority)
+                self.output(f"Bước {self.step} - {profit_text} {profit_part}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Profit/Hour:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Lợi nhuận/Giờ:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
 #Hàm bước tăng dần, giả sử để xử lý logic bước tiếp theo
         self.increase_step()
 
@@ -249,7 +249,7 @@ class SeedClaimer(Claimer):
                 #Xóa mọi lớp phủ tiềm năng trước khi thử nhấp vào
                 overlays_cleared = self.clear_overlays(element, self.step)
                 if overlays_cleared > 0:
-                    self.output(f"Step {self.step} - Cleared {overlays_cleared} overlay(s), retrying click...", 3)
+                    self.output(f"Bước {self.step} -Đã xóa (các) lớp phủ {overlays cleared}, thử nhấp chuột lại...", 3)
 
                 #Cố gắng nhấp vào phần tử
                 self.driver.execute_script("arguments[0].click();", element)
@@ -257,13 +257,13 @@ class SeedClaimer(Claimer):
             except ElementClickInterceptedException:
                 pass #Hãy quay lại vì vẫn còn lớp phủ
             except (StaleElementReferenceException, NoSuchElementException):
-                self.output(f"Step {self.step} - Element not found or stale, retrying...", 3)
+                self.output(f"Bước {self.step} -Không tìm thấy phần tử hoặc phần tử cũ, đang thử lại...", 3)
                 pass  #Không tìm thấy phần tử hoặc phần tử cũ, hãy thử lại
             except TimeoutException:
-                self.output(f"Step {self.step} - Click timed out.", 3)
+                self.output(f"Bước {self.step} -Đã hết thời gian nhấp chuột.", 3)
                 break  #Hết giờ -chúng ta hãy quay lại.
             except Exception as e:
-                self.output(f"Step {self.step} - An error occurred: {e}", 3)
+                self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 3)
                 break  #Thoát khỏi vòng lặp do lỗi không mong muốn
         return False  #Trả về Sai nếu không thể nhấp vào phần tử
 #def move_and_click(self, xpath, wait_time, click, action_description, old_step, ExpectedCondition):
@@ -293,7 +293,7 @@ class SeedClaimer(Claimer):
 
             #Kiểm tra xem target_element có được tìm thấy không
             if self.target_element is None:
-                self.output(f"Step {self.step} - The element was not found for {action_description}.", 2)
+                self.output(f"Bước {self.step} -Không tìm thấy phần tử cho {action_description}.", 2)
                 return None
 
             #Trước khi tương tác, hãy kiểm tra và xóa lớp phủ nếu cần nhấp chuột hoặc cần hiển thị
@@ -311,13 +311,13 @@ class SeedClaimer(Claimer):
                             .move_to_element(self.target_element) \
                             .pause(timer()) \
                             .perform()
-                    self.output(f"Step {self.step} - Successfully moved to the element using ActionChains.", 3)
+                    self.output(f"Bước {self.step} -Đã di chuyển thành công sang phần tử bằng ActionChains.", 3)
                 if click:
                     self.click_element(xpath, wait_time)
             return self.target_element
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Timeout while trying to {action_description}.", 3)
+            self.output(f"Bước {self.step} -Hết thời gian chờ trong khi cố gắng{action_description}.", 3)
             if self.settings['debugIsOn']:
                 #Chụp nguồn trang và lưu nó vào một tập tin
                 page_source = self.driver.page_source
@@ -329,10 +329,10 @@ class SeedClaimer(Claimer):
                         f.write(f"{log['level']}: {log['message']}\n")
 
         except StaleElementReferenceException:
-            self.output(f"Step {self.step} - StaleElementReferenceException caught for {action_description}.", 2)
+            self.output(f"Bước {self.step} -StaleElementReferenceException bị bắt vì {action_description}.", 2)
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred while trying to {action_description}: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi khi cố gắng {action_description}: {e}", 1)
 
         finally:
             if self.settings['debugIsOn']:
@@ -349,7 +349,7 @@ class SeedClaimer(Claimer):
                 elements = self.driver.find_elements(By.XPATH, xpath)
                 #Gỡ lỗi: Xuất ra số phần tử được tìm thấy
                 if first_time:
-                    self.output(f"Step {self.step} - Found {len(elements)} elements with XPath: {xpath}", 3)
+                    self.output(f"Bước {self.step} -Đã tìm thấy phần tử {len(elements)} với XPath: {xpath}", 3)
                     first_time = False
 
                 #Lấy nội dung văn bản của tất cả các phần tử div có liên quan
@@ -367,32 +367,32 @@ class SeedClaimer(Claimer):
             except (StaleElementReferenceException, TimeoutException, NoSuchElementException):
                 pass
             except Exception as e:
-                self.output(f"An error occurred: {e}", 3)
+                self.output(f"Đã xảy ra lỗi: {e}", 3)
             time.sleep(0.05)  #Ngủ ngắn để tránh bận rộn chờ đợi
-        return "Unknown"
+        return "không xác định"
 
     def get_wait_time(self, step_number="108", beforeAfter="pre-claim", max_attempts=1):
 
         for attempt in range(1, max_attempts + 1):
             try:
-                self.output(f"Step {self.step} - Get the wait time...", 3)
+                self.output(f"Bước {self.step} -Lấy thời gian chờ...", 3)
                 xpath = "//div[p[text() = 'Storage']]/div[1]"
                 elements = self.monitor_element(xpath, 10)
                 #Thay thế các lần xuất hiện của " h" bằng "h" và " m" bằng "m" (bao gồm cả khoảng trắng)
                 elements = elements.replace(" h ", "h ").replace(" m ", "m ")
                 if elements:
                     return elements
-                return "Unknown"
+                return "không xác định"
             except Exception as e:
-                self.output(f"Step {self.step} - An error occurred on attempt {attempt}: {e}", 3)
-                return "Unknown"
+                self.output(f"Bước {self.step} -Đã xảy ra lỗi khi thử {attempt}: {e}", 3)
+                return "không xác định"
 
         #Nếu mọi nỗ lực đều thất bại
-        return "Unknown"
+        return "không xác định"
 
     def find_working_link(self, old_step):
 
-        self.output(f"Step {self.step} - Attempting to open a link for the app...",2)
+        self.output(f"Bước {self.step} -Đang cố gắng mở liên kết cho ứng dụng...",2)
 
         start_app_xpath = "//div[contains(@class, 'reply-markup-row')]//button[.//span[contains(text(), 'Open app') or contains(text(), 'Play')]]"
         try:
@@ -415,26 +415,26 @@ class SeedClaimer(Claimer):
                     continue
 
             if not clicked:
-                self.output(f"Step {self.step} - None of the 'Open Wallet' buttons were clickable.\n",1)
+                self.output(f"Bước {self.step} -Không có nút 'Mở ví' nào có thể nhấp được.\n",1)
                 if self.settings['debugIsOn']:
                     screenshot_path = f"{self.screenshots_path}/{self.step}-no-clickable-button.png"
                     self.driver.save_screenshot(screenshot_path)
                 return False
             else:
-                self.output(f"Step {self.step} - Successfully able to open a link for the app..\n",3)
+                self.output(f"Bước {self.step} -Có thể mở liên kết cho ứng dụng thành công..\n",3)
                 if self.settings['debugIsOn']:
                     screenshot_path = f"{self.screenshots_path}/{self.step}-app-opened.png"
                     self.driver.save_screenshot(screenshot_path)
                 return True
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find the 'Open Wallet' button within the expected timeframe.\n",1)
+            self.output(f"Bước {self.step} -Không tìm thấy nút 'Mở ví' trong khung thời gian dự kiến.\n",1)
             if self.settings['debugIsOn']:
                 screenshot_path = f"{self.screenshots_path}/{self.step}-timeout-finding-button.png"
                 self.driver.save_screenshot(screenshot_path)
             return False
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred while trying to open the app: {e}\n",1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi khi cố gắng open the app: {e}\n",1)
             if self.settings['debugIsOn']:
                 screenshot_path = f"{self.screenshots_path}/{self.step}-unexpected-error-opening-app.png"
                 self.driver.save_screenshot(screenshot_path)
@@ -442,7 +442,7 @@ class SeedClaimer(Claimer):
 
     def find_claim_link(self, old_step):
 
-        self.output(f"Step {self.step} - Attempting to open a link for the app...", 2)
+        self.output(f"Bước {self.step} -Đang cố gắng mở liên kết cho ứng dụng...", 2)
 
         #Sửa đổi phần tử lớn hơn:
 #Button_xpath = "//button[contains(@class, 'kit-button is-large is-secondary is-fill is-centered Button is-active')]"
@@ -477,26 +477,26 @@ class SeedClaimer(Claimer):
                     continue
 
             if not clicked:
-                self.output(f"Step {self.step} - None of the 'Claim' buttons were clickable.\n", 1)
+                self.output(f"Bước {self.step} -Không có nút 'Xác nhận' nào có thể nhấp được.\n", 1)
                 if self.settings['debugIsOn']:
                     self.screenshot_path = f"{self.screenshots_path}/{self.step}-no-clickable-button.png"
                     self.driver.save_screenshot(screenshot_path)
                 return False
             else:
-                self.output(f"Step {self.step} - Successfully able to open a link for the app..\n", 3)
+                self.output(f"Bước {self.step} -Có thể mở liên kết cho ứng dụng thành công..\n", 3)
                 if self.settings['debugIsOn']:
                     screenshot_path = f"{self.screenshots_path}/{self.step}-app-opened.png"
                     self.driver.save_screenshot(screenshot_path)
                 return True
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find the 'Claim' button within the expected timeframe.\n", 1)
+            self.output(f"Bước {self.step} -Không tìm thấy nút 'Xác nhận quyền sở hữu' trong khung thời gian dự kiến.\n", 1)
             if self.settings['debugIsOn']:
                 screenshot_path = f"{self.screenshots_path}/{self.step}-timeout-finding-button.png"
                 self.driver.save_screenshot(screenshot_path)
             return False
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred while trying to open the app: {e}\n", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi khi cố gắng mở ứng dụng: {e}\n", 1)
             if self.settings['debugIsOn']:
                 screenshot_path = f"{self.screenshots_path}/{self.step}-unexpected-error-opening-app.png"
                 self.driver.save_screenshot(screenshot_path)

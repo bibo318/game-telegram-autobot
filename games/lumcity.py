@@ -60,9 +60,9 @@ class LumCityClaimer(Claimer):
             self.increase_step()
             self.set_cookies()
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.", 1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.", 1)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 1)
 
     def full_claim(self):
         self.step = "100"
@@ -81,13 +81,13 @@ class LumCityClaimer(Claimer):
         try:
             remaining_wait_time = int(remaining_wait_time)
         except ValueError:
-            self.output("STATUS: Wait time is unknown due to non-numeric input.", 1)
+            self.output("STATUS: Wait time is không xác định due to non-numeric input.", 1)
             return 60
 
         if remaining_wait_time > 0:
             if remaining_wait_time < 5 or self.settings["forceClaim"]:
                 self.settings['forceClaim'] = True
-                self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+                self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù đắp ngẫu nhiên nên việc áp dụng: settings['forceClaim'] = True", 3)
             else:
                 self.output(f"STATUS: Wait time is {remaining_wait_time} minutes and off-set of {self.random_offset}.", 1)
                 return remaining_wait_time + self.random_offset
@@ -97,7 +97,7 @@ class LumCityClaimer(Claimer):
             if remaining_wait_time < 5 or self.settings['forceClaim']:
                 try:
                     xpath = "//button[contains(normalize-space(.), 'Claim')]"
-                    self.move_and_click(xpath, 20, True, "click the 'Claim' button", self.step, "clickable")
+                    self.move_and_click(xpath, 20, True, "nhấp vào nút 'Claim", self.step, "clickable")
                     self.increase_step()
 
                     xpath = "//div[contains(@class, '_msgWrapper_7jeg3_57')]//span[1]"
@@ -119,9 +119,9 @@ class LumCityClaimer(Claimer):
                     self.get_balance(True)
 
                     if remaining_wait_time == 0:
-                        self.output(f"Step {self.step} - The wait timer is still showing: Filled.", 1)
+                        self.output(f"Bước {self.step} -Đồng hồ chờ vẫn hiển thị: Đã lấp đầy.", 1)
                         self.output(f"Step {self.step} - This means either the claim failed, or there is lag in the game.", 1)
-                        self.output(f"Step {self.step} - We'll check back in 1 hour to see if the claim processed and if not try again.", 2)
+                        self.output(f"Bước {self.step} -Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại đã được xử lý chưa và nếu chưa hãy thử lại.", 2)
                         return 60
                     else:
                         total_time = self.apply_random_offset(remaining_wait_time)
@@ -129,21 +129,21 @@ class LumCityClaimer(Claimer):
                     return total_time
 
                 except TimeoutException:
-                    self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.", 1)
+                    self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.", 1)
                     return 60
                 except Exception as e:
-                    self.output(f"STATUS: An error occurred while trying to claim: {e}\nLet's wait an hour and try again", 1)
+                    self.output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}\nHãy đợi một giờ và thử lại", 1)
                     return 60
             else:
                 if remaining_wait_time:
                     total_time = self.apply_random_offset(remaining_wait_time)
-                    self.output(f"Step {self.step} - Not Time to claim this wallet yet. Wait for {total_time} minutes until the storage is filled.", 2)
+                    self.output(f"Bước {self.step} -Chưa đến lúc nhận ví này. Đợi {total_time} phút cho đến khi bộ nhớ đầy.", 2)
                     return total_time
                 else:
-                    self.output(f"Step {self.step} - No wait time data found? Let's check again in one hour.", 2)
+                    self.output(f"Bước {self.step} -Không tìm thấy dữ liệu về thời gian chờ? Hãy kiểm tra lại sau một giờ nữa.", 2)
                     return 60
         except Exception as e:
-            self.output(f"Step {self.step} - An unexpected error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi không mong muốn: {e}", 1)
             return 60
 
     def get_balance(self, claimed=False):
@@ -161,9 +161,9 @@ class LumCityClaimer(Claimer):
             balance_part = self.strip_html_tags(self.monitor_element(balance_xpath))
             self.output(f"Step {self.step} - {balance_text} {balance_part}", priority)
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)
 
         self.increase_step()
         return balance_part  #Đã thêm câu lệnh trả về để đảm bảo số dư_part được trả về
@@ -188,20 +188,20 @@ class LumCityClaimer(Claimer):
                 minutes = int(time_parts[1].strip())
                 return hours * 60 + minutes
             except ValueError:
-                return "Unknown"
-        return "Unknown"
+                return "không xác định"
+        return "không xác định"
 
     def get_wait_time(self, step_number="108", beforeAfter="pre-claim", max_attempts=1):
         for attempt in range(1, max_attempts + 1):
             try:
-                self.output(f"Step {self.step} - check if the timer is elapsing...", 3)
+                self.output(f"Bước {self.step} -kiểm tra xem đồng hồ đã hết chưa...", 3)
                 xpath = "//span[text()='Fill Time']/ancestor::div[1]/following-sibling::div"
                 pot_full_value = self.extract_time(self.strip_html_tags(self.monitor_element(xpath, 15)))
                 return pot_full_value
             except Exception as e:
-                self.output(f"Step {self.step} - An error occurred on attempt {attempt}: {e}", 3)
-                return "Unknown"
-        return "Unknown"
+                self.output(f"Bước {self.step} -Đã xảy ra lỗi khi thử {attempt}: {e}", 3)
+                return "không xác định"
+        return "không xác định"
 
 def main():
     claimer = LumCityClaimer()

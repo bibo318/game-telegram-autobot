@@ -69,10 +69,10 @@ class ColdClaimer(Claimer):
             self.set_cookies()
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.",1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.",1)
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}",1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}",1)
 
     def full_claim(self):
         self.step = "100"
@@ -88,42 +88,42 @@ class ColdClaimer(Claimer):
         wait_time_text = self.get_wait_time(self.step, "pre-claim") 
 
         if wait_time_text != "Filled":
-            self.output(f"STATUS: The pot is not yet full, we'll go back to sleep for 1 hour.", 1)
+            self.output(f"TÌNH TRẠNG: Nồi chưa đầy, chúng ta sẽ quay lại ngủ 1 tiếng.", 1)
             return 60
 
         try:
-            self.output(f"Step {self.step} - The pre-claim wait time is : {wait_time_text}", 1)
+            self.output(f"Bước {self.step} -Thời gian chờ yêu cầu trước là: {wait_time_text}", 1)
             self.increase_step()
 
             if wait_time_text == "Filled" or self.settings['forceClaim']:
                 try:
                     original_window = self.driver.current_window_handle
                     xpath = "//button[contains(text(), 'Check News')]"
-                    button = self.move_and_click(xpath, 10, True, "check for NEWS (may not be present).", self.step, "clickable")
+                    button = self.move_and_click(xpath, 10, True, "kiểm tra TIN TỨC (có thể không có mặt).", self.step, "clickable")
                     if button:
-                        self.output(f"Step {self.step} - Clicked the Check News button...", 2)
+                        self.output(f"Bước {self.step} -Nhấp vào nút Kiểm tra tin tức...", 2)
                     self.driver.switch_to.window(original_window)
                     self.increase_step()
                     self.select_iframe(self.step)
                     self.increase_step()
                 except TimeoutException:
                     if self.settings['debugIsOn']:
-                        self.output(f"Step {self.step} - No news to check or button not found.", 3)
+                        self.output(f"Bước {self.step} -Không có tin tức nào để kiểm tra hoặc không tìm thấy nút.", 3)
 
                 #Một lần thử nhấp vào nút Yêu cầu
                 try:
                     #Bấm vào nút "Yêu cầu":
                     xpath = "//button[contains(text(), 'Claim')]"
-                    self.move_and_click(xpath, 10, True, "click the 1st claim button", self.step, "clickable")
+                    self.move_and_click(xpath, 10, True, "nhấp vào nút Claim đầu tiên", self.step, "clickable")
                     self.increase_step()
 
                     xpath = '//div[contains(@class, "react-responsive-modal-modal")]//button[contains(@class, "btn-primary") and text()="Claim"]'
-                    self.move_and_click(xpath, 10, True, "click the 2nd claim button", self.step, "clickable")
-                    self.output(f"Step {self.step} - Clicked the 2nd claim button...", 2)
+                    self.move_and_click(xpath, 10, True, "nhấp vào nút Claim thứ 2", self.step, "clickable")
+                    self.output(f"Step {self.step} - Đã nhấp vào nút Claim thứ 2...", 2)
                     self.increase_step()
 
                     #Đợi vòng quay biến mất trước khi cố gắng lấp đầy thời gian mới.
-                    self.output(f"Step {self.step} - Let's wait for the pending Claim spinner to stop spinning...", 2)
+                    self.output(f"Bước {self.step} -Đợi vòng quay Yêu cầu đang chờ xử lý ngừng quay...", 2)
                     time.sleep(20)
 
                     self.get_balance(True)
@@ -131,17 +131,17 @@ class ColdClaimer(Claimer):
                     wait_time_text = self.get_wait_time(self.step, "post-claim")
 
                     if wait_time_text != "Filled":
-                        self.output(f"STATUS: Successful Claim: We'll check back hourly for the pot to be full.", 1)
+                        self.output(f"TÌNH TRẠNG: Yêu cầu thành công: Chúng tôi sẽ kiểm tra lại hàng giờ để biết số tiền đã đầy.", 1)
                         return 60
                     else:
-                        self.output(f"STATUS: The wait timer is still showing: Filled.", 1)
+                        self.output(f"TRẠNG THÁI: Đồng hồ chờ vẫn hiển thị: Đã đầy", 1)
                         self.output(f"Step {self.step} - This means either the claim failed, or there is lag in the game.", 1)
 
                 except TimeoutException:
-                    self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.", 1)
+                    self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.", 1)
                     return 60
                 except Exception as e:
-                    self.output(f"STATUS: An error occurred while trying to claim: {e}", 1)
+                    self.output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}", 1)
                     return 60
 
             #Kiểm tra xem trạng thái có còn "Đã điền" bên ngoài khối thử không
@@ -149,17 +149,17 @@ class ColdClaimer(Claimer):
             self.get_profit_hour(True)
             wait_time_text = self.get_wait_time(self.step, "post-claim")
             if wait_time_text != "Filled":
-                self.output(f"STATUS: Successful Claim: We'll check back hourly for the pot to be full.", 1)
+                self.output(f"TÌNH TRẠNG: Yêu cầu thành công: Chúng tôi sẽ kiểm tra lại hàng giờ để biết số tiền đã đầy", 1)
                 return 60
 
             self.output(f"Step {self.step} - Exhausted all claim attempts. We'll check back in 1 hour to see if the claim processed and if not try again.", 2)
             return 60
 
         except TimeoutException:
-            self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.", 1)
+            self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.", 1)
             return 60
         except Exception as e:
-            self.output(f"STATUS: An error occurred while trying to claim: {e}\nLet's wait an hour and try again", 1)
+            self.output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}\nHãy đợi một giờ và thử lại", 1)
             return 60
 
     def get_balance(self, claimed=False):
@@ -183,9 +183,9 @@ class ColdClaimer(Claimer):
                 self.output(f"Step {self.step} - {balance_text} {cleaned_balance}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
 #Hàm bước tăng dần, giả sử để xử lý logic bước tiếp theo
         self.increase_step()
 
@@ -206,12 +206,12 @@ class ColdClaimer(Claimer):
 
             #Kiểm tra xem phần tử có phải là Không và xử lý lợi nhuận
             if element:
-                self.output(f"Step {self.step} - {profit_text} {element}", priority)
+                self.output(f"Bước  {self.step} - {profit_text} {element}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Profit/Hour:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Lợi nhuận/Giờ:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
 #Hàm bước tăng dần, giả sử để xử lý logic bước tiếp theo
         self.increase_step()
 
@@ -227,12 +227,12 @@ class ColdClaimer(Claimer):
             else:
                 return "Mining"
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}", 3)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 3)
             if self.settings['debugIsOn']:
                 screenshot_path = f"{self.screenshots_path}/{self.step}_get_wait_time_error.png"
                 self.driver.save_screenshot(screenshot_path)
-                self.output(f"Screenshot saved to {screenshot_path}", 3)
-            return "Unknown"
+                self.output(f"Ảnh chụp màn hình đã được lưu vào {screenshot_path}", 3)
+            return "không xác định"
 
 def main():
     claimer = ColdClaimer()

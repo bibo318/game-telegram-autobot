@@ -73,10 +73,10 @@ class SimpleTapClaimer(Claimer):
             self.set_cookies()
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.",1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.",1)
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}",1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}",1)
 
     def full_claim(self):
         self.step = "100"
@@ -175,16 +175,16 @@ class SimpleTapClaimer(Claimer):
                 self.output(f"Step {self.step} - {balance_text} {cleaned_balance}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
 #Hàm bước tăng dần, giả sử để xử lý logic bước tiếp theo
         self.increase_step()
 
     def get_wait_time(self, step_number="108", beforeAfter="pre-claim"):
         try:
 
-            self.output(f"Step {self.step} - check if the timer is elapsing...", 3)
+            self.output(f"Bước {self.step} -kiểm tra xem đồng hồ đã hết chưa...", 3)
 
             xpath = "//div[contains(@class, 'header_timer')]"
             wait_time = self.extract_time(self.strip_html_tags(self.monitor_element(xpath, 15)))
@@ -194,11 +194,11 @@ class SimpleTapClaimer(Claimer):
             return wait_time          
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}", 3)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 3)
             if self.settings['debugIsOn']:
                 screenshot_path = f"{self.screenshots_path}/{self.step}_get_wait_time_error.png"
                 self.driver.save_screenshot(screenshot_path)
-                self.output(f"Screenshot saved to {screenshot_path}", 3)
+                self.output(f"Ảnh chụp màn hình đã được lưu vào {screenshot_path}", 3)
 
             return None
 
@@ -210,8 +210,8 @@ class SimpleTapClaimer(Claimer):
                 minutes = int(time_parts[1].strip())
                 return hours * 60 + minutes
             except ValueError:
-                return "Unknown"
-        return "Unknown"
+                return "không xác định"
+        return "không xác định"
     
     def strip_html_tags(self, text):
         clean = re.compile('<.*?>')

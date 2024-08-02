@@ -60,9 +60,9 @@ class MDAOClaimer(Claimer):
             self.increase_step()
             self.set_cookies()
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.", 1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.", 1)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 1)
 
     def full_claim(self):
 
@@ -90,7 +90,7 @@ class MDAOClaimer(Claimer):
         if remaining_wait_time == "Filled":
             self.settings['forceClaim'] = True
             remaining_wait_time = 0
-        elif remaining_wait_time == "Unknown":
+        elif remaining_wait_time == "không xác định":
             return 30
         else:
             remaining_wait_time = return_minutes(remaining_wait_time)
@@ -101,7 +101,7 @@ class MDAOClaimer(Claimer):
 
         if int(remaining_wait_time) < 5 or self.settings["forceClaim"]:
             self.settings['forceClaim'] = True
-            self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+            self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù đắp ngẫu nhiên nên việc áp dụng: settings['forceClaim'] = True", 3)
         else:
             self.output(f"STATUS: Wait time is {remaining_wait_time} minutes and off-set of {self.random_offset}.", 1)
             return remaining_wait_time + self.random_offset
@@ -133,9 +133,9 @@ class MDAOClaimer(Claimer):
             balance_part = self.strip_html(self.monitor_element(balance_xpath))
             self.output(f"Step {self.step} - {balance_text} {balance_part}", priority)
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)
 
         self.increase_step()
         return balance_part  #Đã thêm câu lệnh trả về để đảm bảo số dư_part được trả về
@@ -143,17 +143,17 @@ class MDAOClaimer(Claimer):
     def get_wait_time(self, step_number="108", beforeAfter="pre-claim", max_attempts=1):
         for attempt in range(1, max_attempts + 1):
             try:
-                self.output(f"Step {self.step} - check if the timer is elapsing...", 3)
+                self.output(f"Bước {self.step} -kiểm tra xem đồng hồ đã hết chưa...", 3)
                 xpath = "//div[contains(text(), 'until claim')]"
                 pot_full_value = self.monitor_element(xpath, 15)
-                if pot_full_value != "Unknown":
+                if pot_full_value != "không xác định":
                     return pot_full_value
                 else:
                     return "Filled"
             except Exception as e:
-                self.output(f"Step {self.step} - An error occurred on attempt {attempt}: {e}", 3)
-                return "Unknown"
-        return "Unknown"
+                self.output(f"Bước {self.step} -Đã xảy ra lỗi khi thử {attempt}: {e}", 3)
+                return "không xác định"
+        return "không xác định"
 
     def get_profit_hour(self, claimed=False):
         prefix = "After" if claimed else "Before"
@@ -173,9 +173,9 @@ class MDAOClaimer(Claimer):
                 self.output(f"Step {self.step} - {profit_text} {element}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Profit/Hour:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Lợi nhuận/Giờ:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
         
         self.increase_step()
 

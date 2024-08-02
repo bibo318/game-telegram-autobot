@@ -64,7 +64,7 @@ class HotClaimer(Claimer):
             if not self.imported_seedphrase:
                 self.imported_seedphrase = self.validate_seed_phrase()
             input_field.send_keys(self.imported_seedphrase) 
-            self.output(f"Step {self.step} - Was successfully able to enter the seed phrase...", 3)
+            self.output(f"Bước {self.step} -Đã nhập thành công cụm từ hạt giống...", 3)
             self.increase_step()
 
             xpath = "//button[contains(text(), 'Continue')]"
@@ -81,10 +81,10 @@ class HotClaimer(Claimer):
             self.set_cookies()
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.", 1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.", 1)
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 1)
 
     def full_claim(self):
         self.step = "100"
@@ -106,27 +106,27 @@ class HotClaimer(Claimer):
             remaining_wait_time = (sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)) + self.random_offset
             if remaining_wait_time < 5 or self.settings["forceClaim"]:
                 self.settings['forceClaim'] = True
-                self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+                self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù đắp ngẫu nhiên nên việc áp dụng: settings['forceClaim'] = True", 3)
             else:
-                self.output(f"STATUS: Considering {wait_time_text}, we'll go back to sleep for {remaining_wait_time} minutes.", 1)
+                self.output(f"TÌNH TRẠNG: Xem xét {wait_time_text}, chúng tôi sẽ quay lại ngủ trong {remaining_wait_time} phút.", 1)
                 return remaining_wait_time
 
-        if wait_time_text == "Unknown":
+        if wait_time_text == "không xác định":
             return 15
 
         try:
-            self.output(f"Step {self.step} - The pre-claim wait time is : {wait_time_text} and random offset is {self.random_offset} minutes.", 1)
+            self.output(f"Bước {self.step} -Thời gian chờ yêu cầu trước là: {wait_time_text} và thời gian bù trừ ngẫu nhiên là {self.random_offset} phút.", 1)
             self.increase_step()
 
             if wait_time_text == "Filled" or self.settings['forceClaim']:
                 try:
                     original_window = self.driver.current_window_handle
                     xpath = "//button[contains(text(), 'Check NEWS')]"
-                    self.move_and_click(xpath, 3, True, "check for NEWS.", self.step, "clickable")
+                    self.move_and_click(xpath, 3, True, "kiểm tra TIN TỨC.", self.step, "clickable")
                     self.driver.switch_to.window(original_window)
                 except TimeoutException:
                     if self.settings['debugIsOn']:
-                        self.output(f"Step {self.step} - No news to check or button not found.", 3)
+                        self.output(f"Bước {self.step} -Không có tin tức nào để kiểm tra hoặc không tìm thấy nút.", 3)
                 self.increase_step()
 
                 try:
@@ -137,15 +137,15 @@ class HotClaimer(Claimer):
                     self.move_and_click(xpath, 30, True, "click the claim button", self.step, "clickable")
                     self.increase_step()
 
-                    self.output(f"Step {self.step} - Let's wait for the pending Claim spinner to stop spinning...", 2)
+                    self.output(f"Bước {self.step} -Đợi Claim spinner đang chờ xử lý ...", 2)
                     time.sleep(5)
                     wait = WebDriverWait(self.driver, 240)
                     spinner_xpath = "//*[contains(@class, 'spinner')]" 
                     try:
                         wait.until(EC.invisibility_of_element_located((By.XPATH, spinner_xpath)))
-                        self.output(f"Step {self.step} - Pending action spinner has stopped.\n", 3)
+                        self.output(f"Bước {self.step} -Vòng quay hành động đang chờ xử lý đã dừng.\n", 3)
                     except TimeoutException:
-                        self.output(f"Step {self.step} - Looks like the site has lag - the Spinner did not disappear in time.\n", 2)
+                        self.output(f"Bước {self.step} -Có vẻ như trang web bị lag -Spinner không biến mất kịp thời.\n", 2)
                     self.increase_step()
                     wait_time_text = self.get_wait_time(self.step, "post-claim") 
                     matches = re.findall(r'(\d+)([hm])', wait_time_text)
@@ -156,18 +156,18 @@ class HotClaimer(Claimer):
                     self.get_profit_hour(True)
 
                     if wait_time_text == "Filled":
-                        self.output(f"STATUS: The wait timer is still showing: Filled.", 1)
-                        self.output(f"Step {self.step} - This means either the claim failed, or there is >4 minutes lag in the game.", 1)
-                        self.output(f"Step {self.step} - We'll check back in 1 hour to see if the claim processed and if not try again.", 2)
+                        self.output(f"TRẠNG THÁI: Đồng hồ chờ vẫn hiển thị: Đã đầy", 1)
+                        self.output(f"Bước {self.step} -Điều này có nghĩa là xác nhận quyền sở hữu không thành công hoặc có độ trễ >4 phút trong trò chơi.", 1)
+                        self.output(f"Bước {self.step} -Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại đã được xử lý chưa và nếu chưa hãy thử lại.", 2)
                     else:
-                        self.output(f"STATUS: Successful Claim: Next claim {wait_time_text} / {total_wait_time} minutes.", 1)
+                        self.output(f"TRẠNG THÁI: Xác nhận quyền sở hữu thành công: Yêu cầu tiếp theo {wait_time_text} /{total_wait_time} phút.", 1)
                     return max(60, total_wait_time)
 
                 except TimeoutException:
-                    self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.", 1)
+                    self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.", 1)
                     return 60
                 except Exception as e:
-                    self.output(f"STATUS: An error occurred while trying to claim: {e}\nLet's wait an hour and try again", 1)
+                    self.output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}\nHãy đợi một giờ và thử lại", 1)
                     return 60
 
             else:
@@ -176,13 +176,13 @@ class HotClaimer(Claimer):
                     total_time = sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)
                     total_time += 1
                     total_time = max(5, total_time)
-                    self.output(f"Step {self.step} - Not Time to claim this wallet yet. Wait for {total_time} minutes until the storage is filled.", 2)
+                    self.output(f"Bước {self.step} -Chưa đến lúc nhận ví này. Đợi {total_time} phút cho đến khi bộ nhớ đầy.", 2)
                     return total_time
                 else:
-                    self.output(f"Step {self.step} - No wait time data found? Let's check again in one hour.", 2)
+                    self.output(f"Bước {self.step} -Không tìm thấy dữ liệu về thời gian chờ? Hãy kiểm tra lại sau một giờ nữa.", 2)
                     return 60
         except Exception as e:
-            self.output(f"Step {self.step} - An unexpected error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi không mong muốn: {e}", 1)
             return 60
 
     def get_balance(self, claimed=False):
@@ -200,9 +200,9 @@ class HotClaimer(Claimer):
                 self.output(f"Step {self.step} - {balance_text} {balance_part}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)
 
         self.increase_step()
 
@@ -224,9 +224,9 @@ class HotClaimer(Claimer):
                 self.output(f"Step {self.step} - {profit_text} {element}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Profit/Hour:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Lợi nhuận/Giờ:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
         
         self.increase_step()
 
@@ -238,24 +238,24 @@ class HotClaimer(Claimer):
                 if wait_time_element is not None:
                     return wait_time_element.text
                 else:
-                    self.output(f"Step {self.step} - Attempt {attempt}: Wait time element not found. Clicking the 'Storage' link and retrying...", 3)
+                    self.output(f"Bước {self.step} -Cố gắng {attempt}: Không tìm thấy phần tử thời gian chờ. Nhấp vào liên kết 'Storage' và thử lại...", 3)
                     storage_xpath = "//h4[text()='Storage']"
-                    self.move_and_click(storage_xpath, 30, True, "click the 'storage' link", f"{self.step} recheck", "clickable")
-                    self.output(f"Step {self.step} - Attempted to select storage again...", 3)
+                    self.move_and_click(storage_xpath, 30, True, "nhấp vào liên kết 'storage'", f"{self.step} recheck", "clickable")
+                    self.output(f"Step {self.step} - Đã cố gắng chọn lại bộ nhớ...", 3)
                 return wait_time_element.text
 
             except TimeoutException:
                 if attempt < max_attempts:
-                    self.output(f"Step {self.step} - Attempt {attempt}: Wait time element not found. Clicking the 'Storage' link and retrying...", 3)
+                    self.output(f"Bước {self.step} -Cố gắng {attempt}: Không tìm thấy phần tử thời gian chờ. Nhấp vào liên kết 'Storage' và thử lại...", 3)
                     storage_xpath = "//h4[text()='Storage']"
-                    self.move_and_click(storage_xpath, 30, True, "click the 'storage' link", f"{self.step} recheck", "clickable")
+                    self.move_and_click(storage_xpath, 30, True, "nhấp vào liên kết 'storage'", f"{self.step} recheck", "clickable")
                 else:
-                    self.output(f"Step {self.step} - Attempt {attempt}: Wait time element not found.", 3)
+                    self.output(f"Bước {self.step} -Cố gắng {attempt}: Không tìm thấy phần tử thời gian chờ.", 3)
 
             except Exception as e:
-                self.output(f"Step {self.step} - An error occurred on attempt {attempt}: {e}", 3)
+                self.output(f"Bước {self.step} -Đã xảy ra lỗi khi thử {attempt}: {e}", 3)
 
-        return "Unknown"
+        return "không xác định"
 
 def main():
     claimer = HotClaimer()

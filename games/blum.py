@@ -108,7 +108,7 @@ class BlumClaimer(Claimer):
                 self.output(f"TRẠNG THÁI: Vẫn còn bù {wait_time_text} và {self.random_offset} phút -Đi ngủ thôi. {reward_text}", 1)
                 return remaining_wait_time
 
-        if wait_time_text == "Unknown":
+        if wait_time_text == "không xác định":
             return 15
 
         try:
@@ -139,7 +139,7 @@ class BlumClaimer(Claimer):
 
                     if wait_time_text == self.pot_full:
                         self.output(f"Step {self.step} - Đồng hồ chờ vẫn hiển thị: Đã đầy.", 1)
-                        self.output(f"Step {self.step} - Điều này có nghĩa là xác nhận quyền sở hữu không thành công hoặc trò chơi có độ trễ >4 phút.", 1)
+                        self.output(f"Step {self.step} - Điều này có nghĩa là xác nhận quyền sở hữu không thành công hoặc Game có độ trễ >4 phút.", 1)
                         self.output(f"Step {self.step} - Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại có được xử lý hay không và nếu không hãy thử lại.", 2)
                     else:
                         self.output(f"TÌNH TRẠNG: Thời gian chờ gửi yêu cầu: {wait_time_text} & Thời gian hẹn giờ mới = {total_wait_time} phút. {reward_text}", 1)
@@ -200,20 +200,20 @@ class BlumClaimer(Claimer):
                 self.output(f"Step {self.step} - Trước tiên hãy kiểm tra xem thời gian có còn trôi qua không...", 3)
                 xpath = "//div[@class='time-left']"
                 wait_time_value = self.monitor_element(xpath, 10)
-                if wait_time_value != "Unknown":
+                if wait_time_value != "không xác định":
                     return wait_time_value
 
                 self.output(f"Step {self.step} - Then check if the pot is full...", 3)
                 xpath = "//button[.//div[contains(text(), 'Claim')]]"
                 pot_full_value = self.monitor_element(xpath, 10)
-                if pot_full_value != "Unknown":
+                if pot_full_value != "không xác định":
                     return self.pot_full
-                return "Unknown"
+                return "không xác định"
             except Exception as e:
                 self.output(f"Step {self.step} - Đã xảy ra lỗi khi thử {attempt}: {e}", 3)
-                return "Unknown"
+                return "không xác định"
 
-        return "Unknown"
+        return "không xác định"
 
 def main():
     claimer = BlumClaimer()

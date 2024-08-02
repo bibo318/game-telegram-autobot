@@ -2,7 +2,7 @@
 
 ## Tổng quan
 
-Tập lệnh này cho phép bạn quản lý và giám sát các quy trình PM2 của mình cho nhiều trò chơi khác nhau. Bạn có thể xem trạng thái của tất cả các tài khoản của mình, xóa các quy trình và xem tất cả nhật ký PM2 ở một nơi.
+Tập lệnh này cho phép bạn quản lý và giám sát các quy trình PM2 của mình cho nhiều Game khác nhau. Bạn có thể xem trạng thái của tất cả các tài khoản của mình, xóa các quy trình và xem tất cả nhật ký PM2 ở một nơi.
 
 ## Cách sử dụng
 Để khởi chạy tập lệnh trạng thái, hãy chạy:
@@ -21,7 +21,7 @@ t
 ### Xóa tiến trình
 
 #### Xóa theo mẫu
-Để xóa tất cả các trò chơi khớp với một mẫu cụ thể:
+Để xóa tất cả các Game khớp với một mẫu cụ thể:
 ```
 delete [pattern]
 ```
@@ -99,7 +99,7 @@ hoặc chỉ cần nhấn enter mà không gõ bất kỳ lệnh nào.
 
 ## Ví dụ
 
-1. **Xóa tất cả các trò chơi phù hợp với mẫu "Vertus":**
+1. **Xóa tất cả các Game phù hợp với mẫu "Vertus":**
     ```
     delete Vertus
     ```

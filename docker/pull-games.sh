@@ -25,7 +25,7 @@ cd $GAMES_DIR
 # Tạo thư mục đích
 mkdir -p $DEST_DIR
 
-# Sao chép đệ quy nội dung của thư mục trò chơi
+# Sao chép đệ quy nội dung của thư mục Game
 cp -r $GAMES_DIR/* $DEST_DIR
 
 echo "Tất cả các tập tin và thư mục con đã được sao chép vào $DEST_DIR"

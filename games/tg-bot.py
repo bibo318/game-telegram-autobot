@@ -47,7 +47,7 @@ cd $GAMES_DIR
 # Tạo thư mục đích
 mkdir -p $DEST_DIR
 
-# Sao chép đệ quy nội dung của thư mục trò chơi
+# Sao chép đệ quy nội dung của thư mục Game
 cp -r $GAMES_DIR/* $DEST_DIR
 
 echo "All files and subdirectories have been copied to $DEST_DIR"
@@ -61,7 +61,7 @@ echo "All files and subdirectories have been copied to $DEST_DIR"
         sys.exit(1)
 
 def check_and_update_games_utils():
-    """Kiểm tra xem trò chơi/tiện ích có tồn tại không và nếu không, hãy cập nhật bằng pull-games.sh."""
+    """Kiểm tra xem Game/tiện ích có tồn tại không và nếu không, hãy cập nhật bằng pull-games.sh."""
     if not os.path.exists("/usr/src/app/games/utils"):
         pull_games_dest = "/usr/src/app/pull-games.sh"
 
@@ -83,7 +83,7 @@ def check_and_update_games_utils():
         else:
             print("pull-games.sh không tồn tại, bỏ qua cập nhật.")
 
-#Đảm bảo trò chơi/tiện ích có mặt trước khi tiến hành nhập
+#Đảm bảo Game/tiện ích có mặt trước khi tiến hành nhập
 check_and_update_games_utils()
 
 try:

@@ -170,7 +170,7 @@ class WaveClaimer(Claimer):
 
                     if wait_time_text == self.pot_full:
                         self.output(f"TRẠNG THÁI: Đồng hồ chờ vẫn hiển thị: Đã đầy.", 1)
-                        self.output(f"Bước {self.step} -Điều này có nghĩa là xác nhận quyền sở hữu không thành công hoặc có độ trễ >4 phút trong trò chơi.", 1)
+                        self.output(f"Bước {self.step} -Điều này có nghĩa là xác nhận quyền sở hữu không thành công hoặc có độ trễ >4 phút trong Game.", 1)
                         self.output(f"Bước {self.step} -Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại đã được xử lý chưa và nếu chưa hãy thử lại.", 2)
                     else:
                         self.output(f"TRẠNG THÁI: Xác nhận quyền sở hữu thành công: Yêu cầu tiếp theo {wait_time_text} /{total_wait_time} phút.", 1)
@@ -240,7 +240,7 @@ class WaveClaimer(Claimer):
             except Exception as e:
                 self.output(f"Bước {self.step} -Đã xảy ra lỗi khi thử {attempt}: {e}", 3)
 
-        return "Unknown"
+        return "không xác định"
 
 def main():
     claimer = WaveClaimer()

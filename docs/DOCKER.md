@@ -11,7 +11,7 @@ docker run -d --name telegram-claim-bot --restart unless-stopped bibo318/telegra
 ```sh
 docker exec -it telegram-claim-bot /bin/bash
 ```
-## Để thêm một trò chơi:
+## Để thêm một Game:
 ```sh
 # Để chọn từ danh sách các tập lệnh có sẵn:
 ./launch.sh
@@ -26,11 +26,11 @@ docker exec -it telegram-claim-bot /bin/bash
 ```sh
 ./remove-process.sh
 ```
-## Để Xem Các Trò Chơi Đang Chạy (nếu có):
+## Để Xem Các Game Đang Chạy (nếu có):
 ```sh
 pm2 list
 ```
-## Để xem kết quả từ trò chơi (để giám sát):
+## Để xem kết quả từ Game (để giám sát):
 ```sh
 pm2 logs 
 # hoặc cho nhật ký cụ thể

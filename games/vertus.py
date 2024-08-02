@@ -740,7 +740,7 @@ def full_claim():
         
         #Nếu không có điều kiện nào được đáp ứng, trả về tin nhắn mặc định
         increase_step()
-        return "Daily bonus status unknown."
+        return "Daily bonus status không xác định."
 
     launch_iframe()
 
@@ -789,7 +789,7 @@ def full_claim():
             output(f"STATUS: {island_text}We'll go back to sleep for {remaining_wait_time} minutes.", 1)
             return remaining_wait_time
 
-    if wait_time_text == "Unknown":
+    if wait_time_text == "không xác định":
       return 15
 
     try:
@@ -844,7 +844,7 @@ def full_claim():
                 increase_step()
                 
                 if wait_time_text == "Ready to collect":
-                    output(f"STATUS: The wait timer is still showing: Filled.",1)
+                    output(f"TRẠNG THÁI: Đồng hồ chờ vẫn hiển thị: Đã đầy",1)
                     output(f"Step {step} - This means either the claim failed, or there is >4 minutes lag in the game.",1)
                     output(f"Step {step} - We'll check back in 1 hour to see if the claim processed and if not try again.",2)
                 else:
@@ -852,10 +852,10 @@ def full_claim():
                 return min(180, total_wait_time)
 
             except TimeoutException:
-                output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.",1)
+                output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.",1)
                 return 60
             except Exception as e:
-                output(f"STATUS: An error occurred while trying to claim: {e}\nLet's wait an hour and try again",1)
+                output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}\nHãy đợi một giờ và thử lại",1)
                 return 60
 
         else:
@@ -896,8 +896,8 @@ def monitor_element(xpath, timeout=8):
         except (StaleElementReferenceException, TimeoutException, NoSuchElementException):
             pass
         except Exception as e:
-            output(f"An error occurred: {e}", 3)
-    return "Unknown"
+            output(f"Đã xảy ra lỗi: {e}", 3)
+    return "không xác định"
         
 def get_wait_time(step_number="108", beforeAfter="pre-claim", max_attempts=2):
     for attempt in range(1, max_attempts + 1):
@@ -927,7 +927,7 @@ def get_wait_time(step_number="108", beforeAfter="pre-claim", max_attempts=2):
             output(f"Step {step_number} - An error occurred on attempt {attempt}: {e}", 3)
 
     #Nếu mọi nỗ lực đều thất bại
-    return "Unknown"
+    return "không xác định"
 
 def clear_screen():
     #Cố gắng xóa màn hình sau khi nhập cụm từ gốc hoặc số điện thoại di động.

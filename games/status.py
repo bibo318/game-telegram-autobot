@@ -184,7 +184,7 @@ def parse_delete_ids(delete_ids_str):
     return sorted(ids)
 
 def main():
-    print("Đọc dữ liệu từ PM2 -việc này có thể mất chút thời gian nếu bạn có nhiều trò chơi.")
+    print("Đọc dữ liệu từ PM2 -việc này có thể mất chút thời gian nếu bạn có nhiều Game.")
     while True:
         stopped_processes = list_pm2_processes("stopped")
         running_processes = list_pm2_processes("online")

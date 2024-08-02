@@ -137,29 +137,29 @@ class FuelAUClaimer(FuelClaimer):
                 remaining_wait_time = (hours * 60 + minutes)
                 if remaining_wait_time < 5 or self.settings["forceClaim"]:
                     self.settings['forceClaim'] = True
-                    self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+                    self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù đắp ngẫu nhiên nên việc áp dụng: settings['forceClaim'] = True", 3)
                 else:
                     if self.ad_cycle % 12 == 1:
                         self.upgrade_cost()
                     else:
                         self.adverts()
 
-                    self.output(f"STATUS: Pot not due for {remaining_wait_time} minutes - let's come back in 30 to check for adverts.", 1)
+                    self.output(f"TRẠNG THÁI: Chưa hết hạn trong {remaining_wait_time} phút -hãy quay lại sau 30 phút nữa để kiểm tra quảng cáo.", 1)
                     return 30
             except ValueError:
                 pass
 
-        if wait_time_text == "Unknown":
+        if wait_time_text == "không xác định":
             return 15
 
         try:
-            self.output(f"Step {self.step} - The pre-claim wait time is : {wait_time_text} and random offset is {self.random_offset} minutes.", 1)
+            self.output(f"Bước {self.step} -Thời gian chờ yêu cầu trước là: {wait_time_text} và thời gian bù trừ ngẫu nhiên là {self.random_offset} phút.", 1)
             self.increase_step()
             if wait_time_text == "Filled" or self.settings['forceClaim']:
                 try:
                     xpath = "//button[contains(text(), 'Send to warehouse')]"
-                    self.move_and_click(xpath, 10, True, "click the 'Send to warehouse' button", self.step, "clickable")
-                    self.output(f"Step {self.step} - Waiting 10 seconds for the totals and timer to update...", 3)
+                    self.move_and_click(xpath, 10, True, "nhấp vào nút 'Send to warehouse'", self.step, "clickable")
+                    self.output(f"Bước {self.step} -Chờ 10 giây để cập nhật tổng số và bộ hẹn giờ...", 3)
                     time.sleep(10)
                     wait_time_text = self.get_wait_time(self.step, "post-claim")
                     matches = re.findall(r'(\d+)([hm])', wait_time_text)
@@ -176,18 +176,18 @@ class FuelAUClaimer(FuelClaimer):
                     self.increase_step()
                     self.recycle()
                     if wait_time_text == "Filled":
-                        self.output(f"Step {self.step} - The wait timer is still showing: Filled.", 1)
-                        self.output(f"Step {self.step} - This means either the claim failed, or there is >4 minutes lag in the game.", 1)
-                        self.output(f"Step {self.step} - We'll check back in 1 hour to see if the claim processed and if not try again.", 2)
+                        self.output(f"Bước {self.step} -Đồng hồ chờ vẫn hiển thị: Đã lấp đầy.", 1)
+                        self.output(f"Bước {self.step} -Điều này có nghĩa là xác nhận quyền sở hữu không thành công hoặc có độ trễ >4 phút trong trò chơi.", 1)
+                        self.output(f"Bước {self.step} -Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại đã được xử lý chưa và nếu chưa hãy thử lại.", 2)
                     else:
                         self.adverts()
-                        self.output(f"STATUS: Pot full in {total_wait_time} minutes. We'll come back in 30 to check for adverts.", 1)
+                        self.output(f"TRẠNG THÁI: Nồi đầy sau {total_wait_time} phút. Chúng tôi sẽ quay lại sau 30 phút để kiểm tra quảng cáo.", 1)
                     return 30
                 except TimeoutException:
-                    self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.", 1)
+                    self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.", 1)
                     return 60
                 except Exception as e:
-                    self.output(f"STATUS: An error occurred while trying to claim: {e}\nLet's wait an hour and try again", 1)
+                    self.output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}\nHãy đợi một giờ và thử lại", 1)
                     return 60
             else:
                 matches = re.findall(r'(\d+)([hm])', wait_time_text)
@@ -195,13 +195,13 @@ class FuelAUClaimer(FuelClaimer):
                     total_time = sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)
                     total_time += 1
                     total_time = max(5, total_time)
-                    self.output(f"Step {self.step} - Not Time to claim this wallet yet. Wait for {total_time} minutes until the storage is filled.", 2)
+                    self.output(f"Bước {self.step} -Chưa đến lúc nhận ví này. Đợi {total_time} phút cho đến khi bộ nhớ đầy.", 2)
                     return total_time
                 else:
-                    self.output(f"Step {self.step} - No wait time data found? Let's check again in one hour.", 2)
+                    self.output(f"Bước {self.step} -Không tìm thấy dữ liệu về thời gian chờ? Hãy kiểm tra lại sau một giờ nữa.", 2)
                     return 60
         except Exception as e:
-            self.output(f"Step {self.step} - An unexpected error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi không mong muốn: {e}", 1)
             return 60
 
 

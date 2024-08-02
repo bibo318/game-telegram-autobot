@@ -63,7 +63,7 @@ class MDAOAUClaimer(MDAOClaimer):
         if remaining_wait_time == "Filled":
             self.settings['forceClaim'] = True
             remaining_wait_time = 0
-        elif remaining_wait_time == "Unknown":
+        elif remaining_wait_time == "không xác định":
             return 30
         else:
             remaining_wait_time = return_minutes(remaining_wait_time)
@@ -74,7 +74,7 @@ class MDAOAUClaimer(MDAOClaimer):
 
         if int(remaining_wait_time) < 5 or self.settings["forceClaim"]:
             self.settings['forceClaim'] = True
-            self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+            self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù đắp ngẫu nhiên nên việc áp dụng: settings['forceClaim'] = True", 3)
         else:
             self.output(f"STATUS: Wait time is {remaining_wait_time} minutes and off-set of {self.random_offset}.", 1)
             return remaining_wait_time + self.random_offset

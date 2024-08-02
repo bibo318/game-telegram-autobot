@@ -826,7 +826,7 @@ class Claimer():
                 self.output(f"Step {self.step} - {self.target_element.text}")
                 found_error = True
             if not found_error:
-                self.output(f"Step {self.step} - Selenium was unable to interact with the OTP screen for an unknown reason.")
+                self.output(f"Step {self.step} - Selenium was unable to interact with the OTP screen for an không xác định reason.")
 
         except Exception as e:  #Bắt bất kỳ lỗi không mong muốn nào khác
             self.output(f"Step {self.step} - Login failed. Error: {e}", 1) 
@@ -977,7 +977,7 @@ class Claimer():
                 self.driver.save_screenshot(screenshot_path)
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.\n",3)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.\n",3)
             if self.settings['debugIsOn']:
                 screenshot_path = f"{self.screenshots_path}/{self.step}-iframe-timeout.png"
                 self.driver.save_screenshot(screenshot_path)
@@ -1052,13 +1052,13 @@ class Claimer():
                     if self.settings['debugIsOn']:
                         screenshot_path = f"{self.screenshots_path}/{self.step}_{action_description}_invisible.png"
                         self.driver.save_screenshot(screenshot_path)
-                        self.output(f"Screenshot saved to {screenshot_path}", 3)
+                        self.output(f"Ảnh chụp màn hình đã được lưu vào {screenshot_path}", 3)
                     return None
                 elif expectedCondition == "clickable":
                     target_element = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
 
                 if target_element is None:
-                    self.output(f"Step {self.step} - The element was not found for {action_description}.", 2)
+                    self.output(f"Bước {self.step} -Không tìm thấy phần tử cho {action_description}.", 2)
                     return None
 
                 actions = ActionChains(self.driver)
@@ -1106,11 +1106,11 @@ class Claimer():
             except StaleElementReferenceException:
                 self.output(f"Step {self.step} - StaleElementReferenceException caught, retrying attempt {attempt + 1} for {action_description}.", 2)
             except TimeoutException:
-                self.output(f"Step {self.step} - Timeout while trying to {action_description}.", 3)
+                self.output(f"Bước {self.step} -Hết thời gian chờ trong khi cố gắng{action_description}.", 3)
                 self.debug_information(action_description)
                 break
             except Exception as e:
-                self.output(f"Step {self.step} - An error occurred while trying to {action_description}: {e}", 1)
+                self.output(f"Bước {self.step} -Đã xảy ra lỗi khi cố gắng {action_description}: {e}", 1)
                 self.debug_information(action_description)
                 break
 
@@ -1164,10 +1164,10 @@ class Claimer():
             except (StaleElementReferenceException, NoSuchElementException):
                 pass
             except TimeoutException:
-                self.output(f"Step {self.step} - Click timed out.", 2)
+                self.output(f"Bước {self.step} -Đã hết thời gian Click .", 2)
                 break
             except Exception as e:
-                self.output(f"Step {self.step} - An error occurred: {e}", 3)
+                self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 3)
                 break
         return False
 
@@ -1198,7 +1198,7 @@ class Claimer():
             try:
                 elements = self.driver.find_elements(By.XPATH, xpath)
                 if first_time:
-                    self.output(f"Step {self.step} - Found {len(elements)} elements with XPath: {xpath} for {action_description}", 3)
+                    self.output(f"Bước {self.step} -Đã tìm thấy phần tử {len(elements)} với XPath: {xpath} for {action_description}", 3)
                     first_time = False
 
                 texts = [element.text.replace('\n', ' ').replace('\r', ' ').strip() for element in elements if element.text.strip()]
@@ -1207,11 +1207,11 @@ class Claimer():
             except (StaleElementReferenceException, TimeoutException, NoSuchElementException):
                 pass
             except Exception as e:
-                self.output(f"An error occurred: {e}", 3)
+                self.output(f"Đã xảy ra lỗi: {e}", 3)
                 if self.settings['debugIsOn']:
                     self.debug_information(action_description, "monitor_element_error")
-                return "Unknown"
-        return "Unknown"
+                return "không xác định"
+        return "không xác định"
 
     def debug_information(self, action_description, error_type="error"):
         #Kiểm tra xem "không" có xuất hiện trong action_description được đặt trong ngoặc không
@@ -1269,13 +1269,13 @@ class Claimer():
 
             #Kiểm tra xem nút đã được nhấp thành công chưa
             if not clicked:
-                self.output(f"Step {self.step} - None of the 'Open Wallet' buttons were clickable.\n", 1)
+                self.output(f"Bước {self.step} -Không có nút 'Mở ví' nào có thể nhấp được.\n", 1)
                 if self.settings['debugIsOn']:
                     screenshot_path = f"{self.screenshots_path}/{self.step}-no-clickable-button.png"
                     self.driver.save_screenshot(screenshot_path)
                 return False
             else:
-                self.output(f"Step {self.step} - Successfully able to open a link for the app..\n", 3)
+                self.output(f"Bước {self.step} -Có thể mở liên kết cho ứng dụng thành công..\n", 3)
                 if self.settings['debugIsOn']:
                     screenshot_path = f"{self.screenshots_path}/{self.step}-app-opened.png"
                     self.driver.save_screenshot(screenshot_path)
@@ -1288,7 +1288,7 @@ class Claimer():
                 self.driver.save_screenshot(screenshot_path)
             return False
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred while trying to open the app: {e}\n", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi khi cố gắng open the app: {e}\n", 1)
             if self.settings['debugIsOn']:
                 screenshot_path = f"{self.screenshots_path}/{self.step}-unexpected-error-opening-app.png"
                 self.driver.save_screenshot(screenshot_path)

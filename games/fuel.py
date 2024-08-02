@@ -61,21 +61,21 @@ class FuelClaimer(Claimer):
             self.set_cookies()
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.", 1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.", 1)
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}", 1)
 
     def recycle(self):
         try:
             xpath = "//a[text()='Recycling']"
             success = self.move_and_click(xpath, 10, True, "click the 'Recycling' button", self.step, "clickable")
             if success:
-                self.output(f"Step {self.step} - successful: Clicked on the 'Recycling' link", 2)
+                self.output(f"Bước {self.step} -thành công: Đã nhấp vào liên kết 'Tái chế'", 2)
                 self.increase_step()
                 time.sleep(20)
             else:
-                self.output(f"Step {self.step} - failed: Unable to click on the 'Recycling' link", 2)
+                self.output(f"Bước {self.step} -không thành công: Không thể nhấp vào liên kết 'Tái chế'", 2)
                 return
                 
             xpath = "//button[@class='recycle-button']"
@@ -91,7 +91,7 @@ class FuelClaimer(Claimer):
         xpath = "//button[contains(., 'Increase multiplier by')]"
         advert = self.move_and_click(xpath, 10, True, "watch an advert", self.step, "clickable")
         if advert:
-            self.output(f"Step {self.step} - Waiting 60 seconds for the advert to play.", 3)
+            self.output(f"Bước {self.step} -Chờ 60 giây để phát quảng cáo.", 3)
             time.sleep(60)
             self.increase_step()
             self.get_balance(True)
@@ -116,20 +116,20 @@ class FuelClaimer(Claimer):
                 remaining_wait_time = (hours * 60 + minutes)
                 if remaining_wait_time < 5 or self.settings["forceClaim"]:
                     self.settings['forceClaim'] = True
-                    self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+                    self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù đắp ngẫu nhiên nên việc áp dụng: settings['forceClaim'] = True", 3)
                 else:
                     remaining_wait_time = 30
                     self.adverts()
-                    self.output(f"STATUS: Pot not ready for claiming - let's come back in 30 minutes to check for adverts.", 1)
+                    self.output(f"TÌNH TRẠNG: Nồi chưa sẵn sàng để nhận -hãy quay lại sau 30 phút để kiểm tra quảng cáo.", 1)
                     return remaining_wait_time
             except ValueError:
                 pass
 
-        if wait_time_text == "Unknown":
+        if wait_time_text == "không xác định":
             return 15
 
         try:
-            self.output(f"Step {self.step} - The pre-claim wait time is : {wait_time_text} and random offset is {self.random_offset} minutes.", 1)
+            self.output(f"Bước {self.step} -Thời gian chờ yêu cầu trước là: {wait_time_text} và thời gian bù trừ ngẫu nhiên là {self.random_offset} phút.", 1)
             self.increase_step()
 
             if wait_time_text == "Filled" or self.settings['forceClaim']:
@@ -138,7 +138,7 @@ class FuelClaimer(Claimer):
                     xpath = "//button[contains(text(), 'Send to warehouse')]"
                     self.move_and_click(xpath, 10, True, "click the 'Launch' button", self.step, "clickable")
 
-                    self.output(f"Step {self.step} - Waiting 10 seconds for the totals and timer to update...", 3) 
+                    self.output(f"Bước {self.step} -Chờ 10 giây để cập nhật tổng số và bộ hẹn giờ...", 3) 
                     time.sleep(10)
                     
                     wait_time_text = self.get_wait_time(self.step, "post-claim") 
@@ -153,18 +153,18 @@ class FuelClaimer(Claimer):
                     self.increase_step()
                     self.recycle()
                     if wait_time_text == "Filled":
-                        self.output(f"Step {self.step} - The wait timer is still showing: Filled.", 1)
-                        self.output(f"Step {self.step} - This means either the claim failed, or there is >4 minutes lag in the game.", 1)
-                        self.output(f"Step {self.step} - We'll check back in 1 hour to see if the claim processed and if not try again.", 2)
+                        self.output(f"Bước {self.step} -Đồng hồ chờ vẫn hiển thị: Đã lấp đầy.", 1)
+                        self.output(f"Bước {self.step} -Điều này có nghĩa là xác nhận quyền sở hữu không thành công hoặc có độ trễ >4 phút trong trò chơi.", 1)
+                        self.output(f"Bước {self.step} -Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại đã được xử lý chưa và nếu chưa hãy thử lại.", 2)
                     else:
-                        self.output(f"STATUS: Pot full in {total_wait_time} minutes. We'll come back in 30 to check for adverts.", 1)
+                        self.output(f"TRẠNG THÁI: Nồi đầy sau {total_wait_time} phút. Chúng tôi sẽ quay lại sau 30 phút để kiểm tra quảng cáo.", 1)
                     return 30
 
                 except TimeoutException:
-                    self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.", 1)
+                    self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.", 1)
                     return 60
                 except Exception as e:
-                    self.output(f"STATUS: An error occurred while trying to claim: {e}\nLet's wait an hour and try again", 1)
+                    self.output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}\nHãy đợi một giờ và thử lại", 1)
                     return 60
 
             else:
@@ -173,13 +173,13 @@ class FuelClaimer(Claimer):
                     total_time = sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)
                     total_time += 1
                     total_time = max(5, total_time) 
-                    self.output(f"Step {self.step} - Not Time to claim this wallet yet. Wait for {total_time} minutes until the storage is filled.", 2)
+                    self.output(f"Bước {self.step} -Chưa đến lúc nhận ví này. Đợi {total_time} phút cho đến khi bộ nhớ đầy.", 2)
                     return total_time 
                 else:
-                    self.output(f"Step {self.step} - No wait time data found? Let's check again in one hour.", 2)
+                    self.output(f"Bước {self.step} -Không tìm thấy dữ liệu về thời gian chờ? Hãy kiểm tra lại sau một giờ nữa.", 2)
                     return 60 
         except Exception as e:
-            self.output(f"Step {self.step} - An unexpected error occurred: {e}", 1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi không mong muốn: {e}", 1)
             return 60 
         
     def get_balance(self, claimed=False):
@@ -228,9 +228,9 @@ class FuelClaimer(Claimer):
                 self.output(f"Step {self.step} - {profit_text} {element} oil", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Profit/Hour:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Lợi nhuận/Giờ:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  #Cung cấp lỗi dưới dạng chuỗi để ghi nhật ký
 
         self.increase_step()
 
@@ -238,15 +238,15 @@ class FuelClaimer(Claimer):
     def get_wait_time(self, step_number="108", beforeAfter="pre-claim", max_attempts=1):
         for attempt in range(1, max_attempts + 1):
             try:
-                self.output(f"Step {self.step} - check if the timer is elapsing...", 3)
+                self.output(f"Bước {self.step} -kiểm tra xem đồng hồ đã hết chưa...", 3)
                 xpath = "//div[@class='in-storage-footer']"
                 pot_full_value = self.monitor_element(xpath, 15)
                 return pot_full_value
             except Exception as e:
-                self.output(f"Step {self.step} - An error occurred on attempt {attempt}: {e}", 3)
-                return "Unknown"
+                self.output(f"Bước {self.step} -Đã xảy ra lỗi khi thử {attempt}: {e}", 3)
+                return "không xác định"
 
-        return "Unknown"
+        return "không xác định"
 
 def main():
     claimer = FuelClaimer()

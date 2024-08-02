@@ -71,17 +71,17 @@ class DiamondClaimer(Claimer):
             if not self.imported_seedphrase:
                 self.imported_seedphrase = self.validate_seed_phrase()
             input_field.send_keys(self.imported_seedphrase) 
-            self.output(f"Step {self.step} - Was successfully able to enter the seed phrase...",3)
+            self.output(f"Bước {self.step} -Đã nhập thành công cụm từ hạt giống...",3)
             self.increase_step()
 
             # Click the continue button after seed phrase entry:
             xpath = "//button[contains(text(), 'Continue')]"
-            self.move_and_click(xpath, 30, True, "click continue after seedphrase entry", self.step, "clickable")
+            self.move_and_click(xpath, 30, True, "nhấp vào tiếp tục sau khi nhập seedphrase", self.step, "clickable")
             self.increase_step()
 
             # Click the account selection button:
             xpath = "//div[contains(text(), 'Select account')]"
-            self.move_and_click(xpath, 20, True, "click account selection (may not be present)", self.step, "clickable")
+            self.move_and_click(xpath, 20, True, "nhấp vào lựa chọn tài khoản (có thể không có)", self.step, "clickable")
             self.increase_step()
 
             if not (self.forceRequestUserAgent or self.settings["requestUserAgent"]):
@@ -98,10 +98,10 @@ class DiamondClaimer(Claimer):
                     json.dump(cookies, file)
 
         except TimeoutException:
-            self.output(f"Step {self.step} - Failed to find or switch to the iframe within the timeout period.",1)
+            self.output(f"Bước {self.step} -Không tìm thấy hoặc chuyển sang iframe trong khoảng thời gian chờ.",1)
 
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {e}",1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {e}",1)
 
     def full_claim(self):
         self.step = "100"
@@ -110,12 +110,12 @@ class DiamondClaimer(Claimer):
 
         # Best on Standalone:
         xpath = "//p[text()='Storage']"
-        self.move_and_click(xpath, 15, True, "click the 'storage' link", self.step, "clickable")
+        self.move_and_click(xpath, 15, True, "nhấp vào liên kết 'storage'", self.step, "clickable")
         self.increase_step
 
         # Best on Docker!:
         xpath = "//h2[text()='Mining']"
-        self.move_and_click(xpath, 15, True, "click the alternative 'storage' link (may not be present)", self.step, "clickable")
+        self.move_and_click(xpath, 15, True, "nhấp vào liên kết 'storage' thay thế (có thể không có)", self.step, "clickable")
         self.increase_step
 
         self.get_balance(False)
@@ -128,16 +128,16 @@ class DiamondClaimer(Claimer):
             remaining_wait_time = (sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)) + self.random_offset
             if remaining_wait_time < 5 or self.settings["forceClaim"]:
                 self.settings['forceClaim'] = True
-                self.output(f"Step {self.step} - the remaining time to claim is less than the random offset, so applying: settings['forceClaim'] = True", 3)
+                self.output(f"Bước {self.step} -thời gian còn lại để yêu cầu ít hơn thời gian bù đắp ngẫu nhiên nên việc áp dụng: settings['forceClaim'] = True", 3)
             else:
-                self.output(f"STATUS: Considering {wait_time_text}, we'll go back to sleep for {remaining_wait_time} minutes.", 1)
+                self.output(f"TÌNH TRẠNG: Xem xét {wait_time_text}, chúng tôi sẽ quay lại ngủ trong {remaining_wait_time} phút.", 1)
                 return remaining_wait_time
 
-        if wait_time_text == "Unknown":
+        if wait_time_text == "không xác định":
             return 15
 
         try:
-            self.output(f"Step {self.step} - The pre-claim wait time is : {wait_time_text} and random offset is {self.random_offset} minutes.",1)
+            self.output(f"Bước {self.step} -Thời gian chờ yêu cầu trước là: {wait_time_text} và thời gian bù trừ ngẫu nhiên là {self.random_offset} phút.",1)
             self.increase_step()
 
             if wait_time_text == "0h 0m to fill" or self.settings['forceClaim']:
@@ -147,24 +147,24 @@ class DiamondClaimer(Claimer):
                     try:
                         original_window = self.driver.current_window_handle
                         xpath = "//button[contains(text(), 'Check NEWS')]"
-                        success = self.move_and_click(xpath, 10, True, "check for NEWS.", self.step, "clickable")
+                        success = self.move_and_click(xpath, 10, True, "kiểm tra TIN TỨC.", self.step, "clickable")
                         if success:
-                            self.output(f"Step {self.step} - atempting to switch back to iFrame.")
+                            self.output(f"Bước {self.step} -cố gắng chuyển về iFrame.")
                             self.driver.switch_to.window(original_window)
                     except TimeoutException:
                         if self.settings['debugIsOn']:
-                            self.output(f"Step {self.step} - No news to check or button not found.", 3)
+                            self.output(f"Bước {self.step} -Không có tin tức nào để kiểm tra hoặc không tìm thấy nút.", 3)
                     self.increase_step()
 
 
                     # Click on the "Claim" button:
                     xpath = "//button[contains(text(), 'Claim')]"
-                    self.move_and_click(xpath, 30, True, "click the claim button", self.step, "clickable")
+                    self.move_and_click(xpath, 30, True, "nhấp vào nút claim", self.step, "clickable")
                     self.increase_step()
 
                     # Now let's try again to get the time remaining until filled. 
                     # 4th April 24 - Let's wait for the spinner to disappear before trying to get the new time to fill.
-                    self.output(f"Step {self.step} - Let's wait for the pending Claim spinner to stop spinning...",2)
+                    self.output(f"Bước {self.step} -Đợi Claim spinner đang chờ xử lý ...",2)
                     time.sleep(5)
                     wait_time_text = self.get_wait_time(self.step, "post-claim") 
                     matches = re.findall(r'(\d+)([hm])', wait_time_text)
@@ -175,18 +175,18 @@ class DiamondClaimer(Claimer):
                     self.get_profit_hour(True)
 
                     if wait_time_text == "0h 0m to fill":
-                        self.output(f"STATUS: The wait timer is still showing: Filled.",1)
-                        self.output(f"Step {self.step} - This means either the claim failed, or there is >4 minutes lag in the game.",1)
-                        self.output(f"Step {self.step} - We'll check back in 1 hour to see if the claim processed and if not try again.",2)
+                        self.output(f"TRẠNG THÁI: Đồng hồ chờ vẫn hiển thị: Đã đầy",1)
+                        self.output(f"Bước {self.step} -Điều này có nghĩa là xác nhận quyền sở hữu không thành công hoặc có độ trễ >4 phút trong trò chơi.",1)
+                        self.output(f"Bước {self.step} -Chúng tôi sẽ kiểm tra lại sau 1 giờ để xem khiếu nại đã được xử lý chưa và nếu chưa hãy thử lại.",2)
                     else:
-                        self.output(f"STATUS: Successful Claim: Next claim {wait_time_text} / {total_wait_time} minutes.",1)
+                        self.output(f"TRẠNG THÁI: Xác nhận quyền sở hữu thành công: Yêu cầu tiếp theo {wait_time_text} /{total_wait_time} phút.",1)
                     return max(60, total_wait_time)
 
                 except TimeoutException:
-                    self.output(f"STATUS: The claim process timed out: Maybe the site has lag? Will retry after one hour.",1)
+                    self.output(f"TRẠNG THÁI: Quá trình xác nhận quyền sở hữu đã hết thời gian: Có thể trang web bị lag? Sẽ thử lại sau một giờ.",1)
                     return 60
                 except Exception as e:
-                    self.output(f"STATUS: An error occurred while trying to claim: {e}\nLet's wait an hour and try again",1)
+                    self.output(f"TRẠNG THÁI: Đã xảy ra lỗi khi cố gắng xác nhận quyền sở hữu: {e}\nHãy đợi một giờ và thử lại",1)
                     return 60
 
             else:
@@ -196,13 +196,13 @@ class DiamondClaimer(Claimer):
                     total_time = sum(int(value) * (60 if unit == 'h' else 1) for value, unit in matches)
                     total_time += 1
                     total_time = max(5, total_time) # Wait at least 5 minutes or the time
-                    self.output(f"Step {self.step} - Not Time to claim this wallet yet. Wait for {total_time} minutes until the storage is filled.",2)
+                    self.output(f"Bước {self.step} -Chưa đến lúc nhận ví này. Đợi {total_time} phút cho đến khi bộ nhớ đầy.",2)
                     return total_time 
                 else:
-                    self.output(f"Step {self.step} - No wait time data found? Let's check again in one hour.",2)
+                    self.output(f"Bước {self.step} -Không tìm thấy dữ liệu về thời gian chờ? Hãy kiểm tra lại sau một giờ nữa.",2)
                     return 60  # Default wait time when no specific time until filled is found.
         except Exception as e:
-            self.output(f"Step {self.step} - An unexpected error occurred: {e}",1)
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi không mong muốn: {e}",1)
             return 60  # Default wait time in case of an unexpected error
         
     def get_balance(self, claimed=False):
@@ -225,9 +225,9 @@ class DiamondClaimer(Claimer):
                 self.output(f"Step {self.step} - {balance_text} {element}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Balance:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Số dư:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  # Provide error as string for logging
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  # Provide error as string for logging
 
         # Increment step function, assumed to handle next step logic
         self.increase_step()
@@ -252,9 +252,9 @@ class DiamondClaimer(Claimer):
                 self.output(f"Step {self.step} - {profit_text} {element}", priority)
 
         except NoSuchElementException:
-            self.output(f"Step {self.step} - Element containing '{prefix} Profit/Hour:' was not found.", priority)
+            self.output(f"Bước {self.step} -Không tìm thấy phần tử chứa '{prefix} Lợi nhuận/Giờ:'.", priority)
         except Exception as e:
-            self.output(f"Step {self.step} - An error occurred: {str(e)}", priority)  # Provide error as string for logging
+            self.output(f"Bước {self.step} -Đã xảy ra lỗi: {str(e)}", priority)  # Provide error as string for logging
 
         # Increment step function, assumed to handle next step logic
         self.increase_step()
@@ -267,10 +267,10 @@ class DiamondClaimer(Claimer):
             if wait_time_element is not None:
                 return wait_time_element.text
             else:
-                return "Unknown"
+                return "không xác định"
         except Exception as e:
-            self.output(f"Step {step_number} - An error occurred: {e}", 3)
-            return "Unknown"
+            self.output(f"Step {step_number} - Đã xảy ra lỗi: {e}", 3)
+            return "không xác định"
 
 def main():
     claimer = DiamondClaimer()
