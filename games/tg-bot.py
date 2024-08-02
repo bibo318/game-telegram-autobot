@@ -331,7 +331,7 @@ def show_logs(process) -> str:
 #khu vực sử dụng
 
 async def send_message(update: Update, context: ContextTypes.DEFAULT_TYPE, text: str) -> int:
-    """Send a message with the help of the bot."""
+    """Gửi tin nhắn với sự trợ giúp của bot."""
 
     #Xác định cách chính xác để gửi phản hồi dựa trên loại cập nhật
     if update.callback_query:
